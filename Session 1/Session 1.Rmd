@@ -1,0 +1,240 @@
+---
+title: "Session 1: Basic R Operations"
+author: "Wali Reheman"
+date: "2024-09-03"
+output: 
+  pdf_document:
+    toc: true
+    number_sections: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introduction
+
+- **Overview:** Introduces fundamental R data structures, operations, and basic data manipulation.
+- **Objectives:**
+  - Understand vectors, lists, and data frames.
+  - Learn basic arithmetic, relational, and logical operations.
+  - Import data from external files.
+  - Perform data manipulation using `tidyverse`.
+  - Export datasets in different formats.
+
+# Basic R Operations
+
+- **Arithmetic Operations**
+  - Perform addition, subtraction, multiplication, division, and exponentiation.
+  - Example:
+
+```{r}
+  # Arithmetic operations
+  a <- 10
+  b <- 3
+  
+  addition <- a + b
+  subtraction <- a - b
+  multiplication <- a * b
+  division <- a / b
+  exponentiation <- a^b
+  
+  addition
+  subtraction
+  multiplication
+  division
+  exponentiation
+```
+
+- **Relational Operations**
+  - Compare values using operators like `==`, `!=`, `<`, and `>`.
+  - Example:
+
+```{r}
+  # Relational operations
+  equal_check <- a == b
+  not_equal_check <- a != b
+  greater_than <- a > b
+  less_than <- a < b
+  
+  equal_check
+  not_equal_check
+  greater_than
+  less_than
+```
+
+- **Logical Operations**
+  - Combine or invert boolean expressions with `&`, `|`, and `!`.
+  - Example:
+
+```{r}
+  # Logical operations
+  logical_and <- (a > 5) & (b < 5)
+  logical_or <- (a > 15) | (b < 5)
+  logical_not <- !(a > b)
+  
+  logical_and
+  logical_or
+  logical_not
+```
+
+- **Vectorized Operations**
+  - Apply operations element-wise on vectors.
+  - Example:
+
+```{r}
+  # Vectorized operations
+  vector1 <- c(1, 2, 3)
+  vector2 <- c(4, 5, 6)
+  vector_sum <- vector1 + vector2
+  
+  vector_sum
+```
+
+# 1. Vectors and Objects
+
+- **Definition:** A vector is a basic R data structure containing elements of the same type.
+- **Example:**
+
+```{r}
+# Create vectors
+Names <- c("Jack", "Amy")   # Character vector for names
+Apple <- c(5, 7)            # Numeric vector for apple counts
+Orange <- c(4, 8)           # Numeric vector for orange counts
+```
+
+# 2. Lists
+
+- **Definition:** A list can store elements of different types, such as vectors, data frames, or other lists.
+- **Examples:**
+
+```{r}
+# List containing vectors
+List_of_Variables <- list(Names, Apple, Orange)
+
+# List containing datasets (data frames)
+List_of_Datasets <- list(cars, mtcars)
+
+# List with mixed types: integer, vector, and data frame
+List_of_anything <- list(1, Orange, mtcars)
+
+# Extracting a dataset from a list
+mtcars <- List_of_Datasets[[2]]  # Assigns the second dataset to 'mtcars'
+```
+
+# 3. Datasets
+
+- **Definition:** In R, datasets are typically stored as data frames or tibbles.
+- **Formats:**
+  - **Wide Format:** Each column represents a variable.
+  - **Long Format:** Data is organized with one column for variable types.
+- **Examples:**
+
+```{r}
+# Wide format data frame
+Names <- c("Jack", "Amy")
+Apple <- c(5, 7)
+Orange <- c(4, 8)
+Wide <- data.frame(Names, Apple, Orange)
+head(Wide)  # Display first rows
+
+# Long format data frame
+Names2 <- c("Jack", "Jack", "Amy", "Amy")
+Fruit2 <- c("Apple", "Orange", "Apple", "Orange")
+Amount <- c(5, 4, 7, 8)
+Long <- data.frame(Names2, Fruit2, Amount)
+head(Long)  # Display first rows
+```
+
+# 4. Reading External Data
+
+- **Purpose:** Import data from external files into R.
+- **Instructions:**
+  - Use the `haven` package for SPSS and Stata files.
+  - Use `load()` to import RData files.
+- **Examples:**
+
+```{r}
+# Install and load 'haven' package (run once)
+#install.packages("haven")
+library(haven)
+
+# Read a Stata file
+gss22 <- read_dta("GSS2022.dta")
+head(gss22)
+
+# Read an SPSS file
+gss18 <- read_sav("GSS2018.sav")
+head(gss18)
+
+# Load an RData file containing one or more datasets
+load("electionpe.rda")
+
+# Extract a dataset from nested lists (example 1)
+R1 <- electionpe[["presidential"]][["y2021"]][["dataR1"]]
+
+# Extract a dataset using index notation (example 2)
+R1 <- electionpe[[1]][[1]][[2]]
+```
+
+# 5. Data Manipulation
+
+- **Objective:** Modify and prepare datasets using the `tidyverse` package.
+- **Instructions:**
+  - Install and load `tidyverse` (if not already installed).
+  - Use functions like `mutate`, `select`, and `filter` for data transformation.
+- **Example:**
+
+```{r}
+# Install and load 'tidyverse' (run once)
+#install.packages("tidyverse")
+library(tidyverse)
+
+# Create a new variable and select specific columns
+gss22_new <- gss22 %>%
+  mutate(mom_degr = madeg) %>%  # Create new variable 'mom_degr'
+  select(mom_degr, year, id)    # Keep specific columns
+
+# Filter dataset for rows where 'mom_degr' equals 4
+gss22_new <- gss22_new %>%
+  filter(mom_degr == 4)
+```
+
+# 6. Outputting Data
+
+- **Objective:** Save datasets to files for later use or sharing.
+- **Instructions:**
+  - Use the `openxlsx` package for Excel files.
+  - Use `write.csv` for CSV files.
+  - Use `write_dta` from `haven` for Stata files.
+  - Use `save()` to create an RData file containing multiple datasets.
+- **Example:**
+
+```{r}
+# Install and load 'openxlsx' package (run once)
+#install.packages("openxlsx", dependencies = TRUE)
+library(openxlsx)
+
+write.xlsx(gss22_new, file = "gss22_new.xlsx")
+# Export dataset to a CSV file
+write.csv(gss22_new, file = "gss22_new.csv")
+
+# Export dataset to a Stata file using 'haven'
+write_dta(gss22_new, path = "gss22_new.dta")
+
+# Save multiple datasets into an RData file
+save(gss22, gss22_new, file = "gss22_both.rda")
+
+# Load to verify the saved datasets
+load("gss22_both.rda")
+# Note: Datasets load as separate objects, not as a list.
+```
+
+# Summary
+
+- **Key Takeaways:**
+  - Vectors, lists, and data frames form the core R data structures.
+  - Basic arithmetic, relational, and logical operations are essential for data manipulation.
+  - External data can be imported using appropriate packages.
+  - The `tidyverse` simplifies data transformation tasks.
+  - Datasets can be exported in various formats for further analysis.
