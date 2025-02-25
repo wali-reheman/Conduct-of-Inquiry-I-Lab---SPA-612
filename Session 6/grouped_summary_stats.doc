@@ -1,0 +1,16 @@
+{\rtf1\fs24
+\trowd\trgaph75\trleft-75\intbl\trqc\clbrdrt\brdrs\cellx1008\clbrdrt\brdrs\cellx2448\clbrdrt\brdrs\cellx3312\clbrdrt\brdrs\cellx4176\clbrdrt\brdrs\cellx5040\clbrdrt\brdrs\cellx6048\clbrdrt\brdrs\cellx7488\clbrdrt\brdrs\cellx8352\clbrdrt\brdrs\cellx9216\clbrdrt\brdrs\cellx10080\clbrdrt\brdrs\cellx11088
+\ql \cell\qc (1)\cell\qc (2)\cell\qc (3)\cell\qc (4)\cell\qc (5)\cell\qc (6)\cell\qc (7)\cell\qc (8)\cell\qc (9)\cell\qc (10)\cell\row
+\trowd\trgaph75\trleft-75\trqc\cellx1008\cellx2448\cellx3312\cellx4176\cellx5040\cellx6048\cellx7488\cellx8352\cellx9216\cellx10080\cellx11088
+\ql \cell\qc foreign 0\cell\qc \cell\qc \cell\qc \cell\qc \cell\qc foreign 1\cell\qc \cell\qc \cell\qc \cell\qc \cell\row
+\trowd\trgaph75\trleft-75\trqc\cellx1008\cellx2448\cellx3312\cellx4176\cellx5040\cellx6048\cellx7488\cellx8352\cellx9216\cellx10080\cellx11088
+\trowd\trgaph75\trleft-75\trqc\clbrdrb\brdrs\cellx1008\clbrdrb\brdrs\cellx2448\clbrdrb\brdrs\cellx3312\clbrdrb\brdrs\cellx4176\clbrdrb\brdrs\cellx5040\clbrdrb\brdrs\cellx6048\clbrdrb\brdrs\cellx7488\clbrdrb\brdrs\cellx8352\clbrdrb\brdrs\cellx9216\clbrdrb\brdrs\cellx10080\clbrdrb\brdrs\cellx11088
+\ql VARIABLES\cell\qc N\cell\qc mean\cell\qc sd\cell\qc min\cell\qc max\cell\qc N\cell\qc mean\cell\qc sd\cell\qc min\cell\qc max\cell\row
+\trowd\trgaph75\trleft-75\trqc\cellx1008\cellx2448\cellx3312\cellx4176\cellx5040\cellx6048\cellx7488\cellx8352\cellx9216\cellx10080\cellx11088
+\ql \cell\qc \cell\qc \cell\qc \cell\qc \cell\qc \cell\qc \cell\qc \cell\qc \cell\qc \cell\qc \cell\row
+\ql price\cell\qc 52\cell\qc 6,072\cell\qc 3,097\cell\qc 3,291\cell\qc 15,906\cell\qc 22\cell\qc 6,385\cell\qc 2,622\cell\qc 3,748\cell\qc 12,990\cell\row
+\ql mpg\cell\qc 52\cell\qc 19.83\cell\qc 4.743\cell\qc 12\cell\qc 34\cell\qc 22\cell\qc 24.77\cell\qc 6.611\cell\qc 14\cell\qc 41\cell\row
+\ql weight\cell\qc 52\cell\qc 3,317\cell\qc 695.4\cell\qc 1,800\cell\qc 4,840\cell\qc 22\cell\qc 2,316\cell\qc 433.0\cell\qc 1,760\cell\qc 3,420\cell\row
+\trowd\trgaph75\trleft-75\trqc\trbrdrb\brdrs\clbrdrb\brdrs\cellx1008\clbrdrb\brdrs\cellx2448\clbrdrb\brdrs\cellx3312\clbrdrb\brdrs\cellx4176\clbrdrb\brdrs\cellx5040\clbrdrb\brdrs\cellx6048\clbrdrb\brdrs\cellx7488\clbrdrb\brdrs\cellx8352\clbrdrb\brdrs\cellx9216\clbrdrb\brdrs\cellx10080\clbrdrb\brdrs\cellx11088
+\ql \cell\qc \cell\qc \cell\qc \cell\qc \cell\qc \cell\qc \cell\qc \cell\qc \cell\qc \cell\qc \cell\row
+}

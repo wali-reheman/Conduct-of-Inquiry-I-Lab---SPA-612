@@ -1,0 +1,95 @@
+---
+title: "Week 8 A"
+author: "Wali Reheman"
+date: "2024-10-09"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## **Dataset**
+
+We will use the **NHANES** dataset, which contains health and demographic information collected from a representative sample of the U.S. population. The dataset is available in R through the `NHANES` package.
+
+**Accessing the Dataset**:
+
+```{r}
+install.packages("NHANES")  # Install if not already installed
+library(NHANES)
+data <- data.frame(NHANES)
+
+```
+
+## TASK 1：Data Exploration
+
+-   **Load the `NHANES` dataset**.
+
+-   Use `tidyverse` functions to:
+
+    -   View the **structure** of the dataset.
+
+    -   Summarize key variables: `Age`, `Gender`, `BMI`, `SmokeNow` (whether the person currently smokes), and `PhysActive`(physical activity status).
+
+    -   Just check the **levels** if it is categorical variable.
+
+```{r}
+
+
+```
+
+## TASK 2: Data Cleaning 
+
+-   Check for **missing values** in key variables.
+
+-   Remove any rows with missing values.
+
+-   Recode `SmokeNow` and `PhysActive` to have more interpretable categories if necessary.
+
+```{r}
+
+
+```
+
+## TASK 3: Data Visualization
+
+-   Create a **histogram** of `BMI`.
+
+-   Create a **boxplot** of `BMI` by `Gender`.
+
+-   Add appropriate **labels** and **titles**.
+
+```{r}
+
+```
+
+## TASK 4: **Descriptive Statistics**
+
+-   Present sample statistics for our key variables, mutate the data if needed ( for categorical variables)
+
+-   Present the results in a **neat table**.
+
+```{r}
+
+```
+
+## TASK 5: Regression Analysis
+
+-   Run a linear regression with `BMI` as the **dependent variable** and `Age`, `Gender`, and `PhysActive` as **independent variables**.
+
+-   **Interpret** the coefficients ( to yourself or group member).
+
+```{r}
+
+```
+
+## TASK 6: Presenting Results
+
+-   Use `stargazer` to create a **regression table (both in the console and a Word doc)**.
+
+-   Use `coefplot` to **visualize** the coefficients.
+
+```{r}
+
+```

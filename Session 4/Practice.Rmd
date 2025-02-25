@@ -1,0 +1,268 @@
+---
+title: "Practice"
+author: "Wali Reheman"
+date: "2024-09-24"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(dplyr)
+library(readr)
+library(haven)
+```
+
+```{r}
+data <- haven::read_dta("nyc_schools.dta")
+# Source: New York City Department of Education records, assembled by Nathan Favero
+
+```
+
+## Renaming Variables
+
+```{r}
+
+head(data)
+
+# Rename a variable
+data <- data %>% rename(school = schoolname)
+
+# See if changes made
+head(data)
+```
+
+## Summary Statistics for Subsets
+
+### Method 1
+
+```{r}
+summary(data$overallscore[data$schooltype == "Elementary"])
+
+summary(data$overallscore[data$schooltype == "Middle"])
+
+summary(data$overallscore[data$schooltype == "K-8"])
+
+#Guess what will following codes generate
+
+data$schooltype == "Elementary"
+
+
+```
+
+**Breaking Down the Command:**
+
+1.  **`data$overallscore`:** This selects the `overallscore` column from the `data` dataframe.
+
+2.  **`data$schooltype == "Elementary"`:** This creates a logical vector (TRUE/FALSE) that is `TRUE` for rows where the `schooltype` column equals "Elementary" and `FALSE` otherwise.
+
+3.  **`data$overallscore[data$schooltype == "Elementary"]`:** This uses the logical vector to subset `overallscore`, selecting only those values where `schooltype` is "Elementary."
+
+4.  **`summary()`:** The `summary()` function then computes summary statistics (such as the minimum, 1st quartile, median, mean, 3rd quartile, and maximum) for the selected subset of `overallscore`.
+
+### Method 2
+
+```{r}
+data%>%
+  filter(schooltype=="Elementary")%>%
+  select(overallscore)%>%
+  summary()
+
+
+data%>%
+  filter(schooltype=="Middle")%>%
+  .$overallscore%>% # see the break-downs below
+  summary()
+
+```
+
+**Breaking Down the Command:**
+
+1.  **`data %>%`:** Starts a pipeline where the `data` dataframe is passed into the next function.
+
+2.  **`filter(schooltype == "Middle")`:** Filters the `data` dataframe to include only rows where the `schooltype`column is equal to "Middle." The result is a smaller dataframe containing only middle schools.
+
+3.  **`.$overallscore`:** Extracts the `overallscore` column from the filtered dataframe. The `.` refers to the dataframe that results from the previous step in the pipeline.
+
+4.  **`summary()`:** Applies the `summary()` function to the extracted `overallscore` column, generating summary statistics such as the minimum, 1st quartile, median, mean, 3rd quartile, and maximum for middle schools.
+
+## Rescaling Variables
+
+```{r}
+
+head(data)
+
+# Rescale the overall score to range from 0 to 1
+data <- data %>% 
+  mutate(overallscore = overallscore / 100)
+
+summary(data$overallscore)
+
+
+```
+
+## Creating Dummy Variables for Grades
+
+```{r}
+
+table(data$overallgrade)
+
+# Create dummy variables for letter grades
+data <- data %>% mutate(
+  gradeA = ifelse(overallgrade == "A", 1, ifelse(overallgrade == "", NA, 0)),
+  gradeB = ifelse(overallgrade == "B", 1, ifelse(overallgrade == "", NA, 0)),
+  gradeC = ifelse(overallgrade == "C", 1, ifelse(overallgrade == "", NA, 0)),
+  gradeD = ifelse(overallgrade == "D", 1, ifelse(overallgrade == "", NA, 0)),
+  gradeF = ifelse(overallgrade == "F", 1, ifelse(overallgrade == "", NA, 0)),
+  grade_NA = ifelse(overallgrade == "", 1, 0)
+)
+
+head(data)
+
+table(data$gradeA,data$overallgrade)
+```
+
+Breaking Down the Command:
+
+-   **`gradeA = ifelse(overallgrade == "A", 1, ifelse(overallgrade == "", NA, 0))`:**
+
+    -   **`ifelse(overallgrade == "A", 1, ifelse(overallgrade == "", NA, 0))`:**
+
+        -   Checks if `overallgrade` is "A". If true, assigns `1` to `gradeA`.
+
+        -   If `overallgrade` is missing (empty string), assigns `NA` to `gradeA`.
+
+        -   If neither condition is true, assigns `0` to `gradeA`.
+
+    -   **This pattern is repeated for `gradeB`, `gradeC`, `gradeD`, and `gradeF`,** where the check is for "B", "C", "D", and "F", respectively.
+
+-   **`grade_missing = ifelse(overallgrade == "", 1, 0)`:**
+
+    -   This creates a binary indicator that assigns `1` if `overallgrade` is missing (empty string) and `0` otherwise.
+
+## Creating an Index Variable
+
+Now, let's create an index of the progress grade and the performance grade. We first convert the grades to numeric variables.
+
+We assign a score of 4 to schools with an A, 3 for a B, etc.
+
+```{r}
+
+
+
+# Creating an index of progress grade and performance grade
+data <- data %>% mutate(
+  progress = case_when(
+    progressgrade == "A" ~ 4,
+    progressgrade == "B" ~ 3,
+    progressgrade == "C" ~ 2,
+    progressgrade == "D" ~ 1,
+    progressgrade == "F" ~ 0,
+    TRUE ~ NA_real_
+  ),
+  performance = case_when(
+    performancegrade == "A" ~ 4,
+    performancegrade == "B" ~ 3,
+    performancegrade == "C" ~ 2,
+    performancegrade == "D" ~ 1,
+    performancegrade == "F" ~ 0,
+    TRUE ~ NA_real_
+  ),
+  index = (progress + performance)/2
+)
+
+head(data)
+
+# Note: NA + 10 = ?
+
+table(data$progressgrade,data$progress)
+
+table(data$performancegrade,data$performance)
+
+```
+
++--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ### NA and NA_real\_                                                                                                                                                                                                                                                                                                                                               |
++====================================================================================================================================================================================================================================================================================================================================================================+
+| #### `NA`                                                                                                                                                                                                                                                                                                                                                          |
+|                                                                                                                                                                                                                                                                                                                                                                    |
+| -   **Type:** Generic missing value.                                                                                                                                                                                                                                                                                                                               |
+|                                                                                                                                                                                                                                                                                                                                                                    |
+| -   **Behavior:** When used in expressions, `NA` can adapt to the expected type of the output (integer, numeric, character, etc.). For example, if you're working with a numeric vector and use `NA`, it will automatically be treated as `NA_real_`.                                                                                                              |
+|                                                                                                                                                                                                                                                                                                                                                                    |
+| -   **Usage:** `NA` is flexible and can be used in various contexts, including vectors of different types.                                                                                                                                                                                                                                                         |
+|                                                                                                                                                                                                                                                                                                                                                                    |
+| #### `NA_real_`                                                                                                                                                                                                                                                                                                                                                    |
+|                                                                                                                                                                                                                                                                                                                                                                    |
+| -   **Type:** Specifically a missing value of type `double` (real numbers).                                                                                                                                                                                                                                                                                        |
+|                                                                                                                                                                                                                                                                                                                                                                    |
+| -   **Behavior:** Explicitly indicates that the missing value is numeric and of type `double`. This is important when you need to ensure that the data type remains consistent, especially in functions like `mutate()` where type consistency is crucial.                                                                                                         |
+|                                                                                                                                                                                                                                                                                                                                                                    |
+| -   **Usage:** Typically used in numeric calculations or when creating variables where the type must be explicitly `double`.                                                                                                                                                                                                                                       |
+|                                                                                                                                                                                                                                                                                                                                                                    |
+| #### Why Use `NA_real_`?                                                                                                                                                                                                                                                                                                                                           |
+|                                                                                                                                                                                                                                                                                                                                                                    |
+| -   **Type Consistency:** By explicitly using `NA_real_`, you ensure that the `elementary` variable is always treated as a numeric vector. If you used `NA` instead, R would still work correctly in this case, but using `NA_real_` makes the intent clear and avoids potential issues if the type needs to be consistent, especially in more complex operations. |
+|                                                                                                                                                                                                                                                                                                                                                                    |
+| -   **Prevents Implicit Type Conversion:** If the context changes or if additional types are introduced, `NA_real_` ensures that R does not implicitly convert the vector to another type, which might happen with `NA`.                                                                                                                                           |
++--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+## Handling String Variables
+
+Convert Percentage Variables to Numeric
+
+```{r}
+# We want to know how many black or hispanic students those schools have
+summary(data$blackhispanic)
+
+#We need to convert this variable to just numbers.
+# Convert blackhispanic and ell variables to numeric
+
+data <- data %>% mutate(
+  blackhispanic = as.numeric(gsub("%", "", blackhispanic))
+)
+
+data <- data %>% mutate(
+  blackhispanic = gsub("%", "", blackhispanic),
+  blackhispanic = as.numeric(blackhispanic)
+)
+
+summary(data$blackhispanic)
+
+```
+
+**Breaking Down the Command:**
+
+**`mutate(blackhispanic = as.numeric(gsub("%", "", blackhispanic)))`:**
+
+-   **`gsub("%", "", blackhispanic)`:** This function removes the percentage signs (`%`) from the `blackhispanic`variable. The `gsub` function replaces each occurrence of `%` with an empty string (`""`).
+
+-   **`as.numeric(...)`:** Converts the cleaned `blackhispanic` values (now just numbers in string form) into numeric data.
+
+-   **`mutate(...)`:** Creates a new version of the `blackhispanic` variable within the `data` dataframe, replacing the original values with the cleaned numeric values.
+
+## Extracting Substrings
+
+The variable `dbn` contains the district, borough, and school number. The first 2 digits are the district number. The third digit is the borough. And the fourth through sixth digits are the school number.
+
+```{r}
+
+# Extract district, borough, and school number from the dbn variable
+data <- data %>% mutate(
+  distnum = substr(dbn, 1, 2),
+  borough = substr(dbn, 3, 3),
+  schoolnum = substr(dbn, 4, 6)
+)
+
+substr("abcdef", 2, 5)
+
+```
+
+## Save the data
+
+```{r}
+# Save the cleaned data
+saveRDS(data, "nyc_schools_cleaned.RDS")
+```

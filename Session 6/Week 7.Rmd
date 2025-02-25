@@ -1,0 +1,211 @@
+---
+title: "Summary and Regression Tables with stargazer"
+author: "Wali Reheman"
+date: "2024-10-04"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE, warning=FALSE,message=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction: `stargazer`
+
+`stargazer` is one of the most commonly used packages for creating beautiful tables in R. It allows exporting tables to LaTeX, HTML, or plain text, which can be easily copied to Word.
+
+### Installation:
+
+```{r}
+
+#install.packages("stargazer")
+
+# Load necessary libraries
+library(stargazer)
+
+
+```
+
+#### Example: Summary Table
+
+You can summarize the key variables used in the regression models to give a sense of the sample distribution. This step is important for providing context before presenting regression results.
+
+This will output a summary table that includes the **mean**, **standard deviation (sd)**, **minimum (min)**, **maximum (max)**, and **number of observations (n)** for each of the variables used in the regression models.
+
+```{r}
+# Example data
+data(mtcars)
+
+# Summary table
+stargazer(mtcars, type = "text")  # You can change 'text' to 'html' or 'latex' to suit your output needs
+```
+
+#### Example: Regression Table
+
+```{r}
+# Fit a regression model
+model1 <- lm(mpg ~ cyl + disp, data = mtcars)
+
+model2 <- lm(mpg ~ cyl + disp + hp, data = mtcars)
+# Regression table
+stargazer(model1,model2, type = "text")  # Change 'text' to 'html' for Word compatibility
+
+```
+
+### Exporting to Word or PDF
+
+```{r}
+# Export to Word Doc
+stargazer(mtcars, type = "html", out = "summary_table.doc")
+
+# Export to Word PDF
+
+stargazer(model1,model2, type = "html", out = "regression_table.html")
+
+system("pandoc -s regression_table.html -o regression_table.pdf")
+
+
+```
+
+## Exercise: Wages
+
+```{r}
+# Install necessary packages
+#install.packages("stargazer")
+#install.packages("Ecdat")     # Contains the Wages dataset
+
+# Load required libraries
+library(stargazer)
+library(Ecdat)
+
+# Load the wages dataset
+data(Wages)
+
+head(Wages)
+```
+
+### Sample Statistics
+
+Question: Why are we missing some variables in the table? How would you fix it?
+
+```{r}
+
+# Create a summary table of sample statistics
+stargazer(Wages, type = "text", title = "Sample Statistics for Wages Dataset",
+          summary.stat = c("mean", "sd", "min", "max", "n"))
+
+class(Wages$sex)
+
+Wages$sex <- as.numeric(Wages$sex)
+
+class(Wages$sex)
+
+```
+
+### Regression Tables
+
+```{r}
+# Fit multiple regression models using the wages dataset
+model1 <- lm(lwage ~ ed + exp, data = Wages)
+model2 <- lm(lwage ~ ed + exp + sex, data = Wages)
+model3 <- lm(lwage ~ ed + exp + sex + union, data = Wages)
+
+# Create a basic regression table with multiple models quickly in console
+stargazer(model1, model2, model3, type = "text")
+
+
+# you can also add more details
+stargazer(model1, model2, model3, type = "text",
+          style = 'aer',
+          title = "Basic Regression Results Using Wages Dataset",
+          column.labels = c("Model 1", "Model 2", "Model 3"),
+          dep.var.labels = "Hourly Wage",
+          covariate.labels = c("Years of Education", "Years of Experience", "Gender (Male = 1)", "Union Membership (Yes = 1)"),
+          notes = "Standard errors in parentheses")
+
+
+stargazer(model1, model2, model3, type = "html",out = "3models.doc",
+          style = "aer",
+          title = "Basic Regression Results Using Wages Dataset",
+          column.labels = c("Model 1", "Model 2", "Model 3"),
+          dep.var.labels = "Hourly Wage",
+          covariate.labels = c("Years of Education", "Years of Experience", "Gender (Male = 1)", "Union Membership (Yes = 1)"),
+          notes = "Standard errors in parentheses")
+
+
+```
+
+## Extra
+
+### **Including Robust Standard Errors**:
+
+how to adjust standard errors for heteroskedasticity or clustered standard errors.
+
+```{r}
+
+library(sandwich)
+robust_se <- list(sqrt(diag(vcovHC(model1, type = "HC1"))),
+                  sqrt(diag(vcovHC(model2, type = "HC1"))),
+                  sqrt(diag(vcovHC(model3, type = "HC1"))))
+
+stargazer(model1, model2, model3, type = "text", 
+          se = robust_se, 
+          title = "Regression with Robust Standard Errors")
+
+```
+
++--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| #### Why Robust Standard Errors?                                                                                                                                                                                                                                                                                         |
++==========================================================================================================================================================================================================================================================================================================================+
+| In regression analysis, the standard errors of your coefficients are used to calculate test statistics and confidence intervals. However, standard errors assume that the error terms (residuals) are homoscedastic, meaning they have a constant variance.                                                              |
+|                                                                                                                                                                                                                                                                                                                          |
+| -   **Heteroskedasticity**: If this assumption is violated, the standard errors may be incorrect, leading to invalid inference. In such cases, the estimated coefficients are still unbiased, but the standard errors will be underestimated or overestimated, making your p-values and confidence intervals unreliable. |
+|                                                                                                                                                                                                                                                                                                                          |
+| -   **Robust Standard Errors**: Using robust standard errors corrects for heteroskedasticity by adjusting the standard errors to account for non-constant variance. This method ensures that hypothesis tests remain valid even when the homoscedasticity assumption is violated.                                        |
++--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+## Coefficient Plot
+
+Install and Load the Package:
+
+```{r}
+# Install the package if it's not already installed
+install.packages("coefplot")
+
+# Load the package
+library(coefplot)
+
+```
+
+Fit a Regression Model:
+
+```{r}
+# Example regression model
+model3 <- lm(lwage ~ ed + exp + sex + union, data = Wages)
+
+```
+
+Plot Coefficients:
+
+```{r}
+# Create a coefficient plot
+coefplot(model3,intercept=FALSE)
+
+```
+
+Customization:
+
+```{r}
+# Customized coefficient plot
+coefplot<-coefplot(model3,
+         title = "Coefficient Plot with Customization",  # Add a title
+         xlab = "Coefficient Estimates",                 # Label for x-axis
+         ylab = "Variables",                             # Label for y-axis
+         color = "black",
+         intercept = FALSE,
+         innerCI = 1.96,
+         grid = FALSE)# Remove gridlines for a cleaner look
+
+
+```

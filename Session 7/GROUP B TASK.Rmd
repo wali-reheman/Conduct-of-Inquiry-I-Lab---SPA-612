@@ -1,0 +1,110 @@
+---
+title: "Week 8 B"
+author: "Wali Reheman"
+date: "2024-10-09"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## **Dataset**
+
+We will use the **NHANES** dataset, which contains health and demographic information collected from a representative sample of the U.S. population. The dataset is available in R through the `NHANES` package.
+
+**Accessing the Dataset**:
+
+```{r}
+install.packages("NHANES")  # Install if not already installed
+library(NHANES)
+data <- data.frame(NHANES)
+
+```
+
+## **TASK 1: Data Exploration and Cleaning**
+
+-   Load the `NHANES` dataset.
+
+-   Check for **missing values** and handle them appropriately.
+
+-   Summarize key variables: `Age`, `Gender`, `BMI`, `SmokeNow` (whether the person currently smokes), `PhysActive`(physical activity status) and  `SleepHrsNight`
+
+-   Identify and remove **outliers** in `BMI` (e.g., using the IQR method).
+
+-   **Transform** `BMI` using log transformation if you think it is appropriate.
+
+-   Recode `SmokeNow` and `PhysActive` to have more interpretable categories if necessary.
+
+```{r}
+
+
+```
+
+## TASK 2: Data Visualization
+
+-   Create a **scatter plot** of `BMI` vs. `Age`.
+
+-   Color the points by `SmokeNow`.
+
+-   Use **smooth lines** to show trends (e.g., using `geom_smooth`).
+
+-   Customize the plot with **themes** and **labels**.
+
+```{r}
+
+```
+
+## TASK 3: **Descriptive Analysis**
+
+-   Calculate **correlation coefficients** between `Age`, `BMI`, and `SleepHrsNight` (average hours of sleep per night, if available).
+
+-   Present the **correlation matrix**.
+
+```{r}
+# Ensure 'SleepHrsNight' is available and has no missing values
+
+```
+
+## TASK 4: Multiple Regression Analysis
+
+Run multiple regression models:
+
+-   **Model 1**: `BMI ~ Age`
+
+-   **Model 2**: Add `Gender` as an independent variable.
+
+-   **Model 3**: Include `PhysActive` , `SmokeNow` and `SleepHrsNight` as independent variables.
+
+```{r}
+
+
+```
+
+## TASK 5 (Optional) : Model Diagnostics
+
+-   Check the **assumptions** of linear regression for `model3`:
+
+    -   **Linearity**
+
+    -   **Independence**
+
+    -   **Homoscedasticity**
+
+    -   **Normality of residuals**
+
+```{r}
+
+
+
+```
+
+## TASK 6: Presenting Results
+
+-   Use `stargazer` to **compare all four models** in a single table with **robust standard errors**.
+
+-   Use `coefplot` to **visualize and compare** coefficients across models.
+
+```{r}
+
+```

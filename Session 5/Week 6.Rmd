@@ -1,0 +1,260 @@
+---
+title: "Week 6"
+author: "Wali Reheman"
+date: "2024-09-30"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introduction
+
+The `summarize()` function from the `dplyr` package is a powerful tool for creating summary statistics of your data. It allows you to collapse a dataset to a single row or a summary for each group of observations. In this tutorial, we'll explore the basic and advanced uses of `summarize()`.
+
+```{r}
+#install.packages("gapminder")
+library(tidyverse)
+library(gapminder)
+```
+
+```{r}
+data("gapminder")
+head(gapminder)
+```
+
+# Basic Usage of `summarize()`
+
+The basic syntax of `summarize()` is straightforward. You provide it with a dataset and specify the summary statistics you want to compute.
+
+```{r}
+gapminder %>%
+  summarize(global_avg_lifeExp = mean(lifeExp,na.rm = TRUE),
+            n= n())
+```
+
++-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| **Explanation of `na.rm = TRUE`**                                                                                                                                                                                                                                                   |
++=====================================================================================================================================================================================================================================================================================+
+| When working with data in R, it's common to encounter missing values (`NA`s) in datasets. Most summarization functions in R, such as `mean()`, `sum()`, and `median()`, will return `NA` if any of the values being summarized are missing, which may distort the results.          |
+|                                                                                                                                                                                                                                                                                     |
+| To handle this, many R functions include an argument called `na.rm`. The argument stands for "remove NAs" and is a logical value (`TRUE` or `FALSE`). When set to `TRUE`, the function ignores any `NA` values and proceeds with the calculation using only the non-missing values. |
+|                                                                                                                                                                                                                                                                                     |
+| In our case today, we know there is no NA in the data so I omitted **`na.rm = TRUE`**                                                                                                                                                                                               |
++-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+# Grouped Summaries with `group_by()`
+
+Often, you want to compute summaries for subgroups within your data. This is where `group_by()` comes into play.
+
+```{r}
+gapminder %>%
+  group_by(country) %>%
+  summarize(avg_lifeExp = mean(lifeExp),
+            n=n())
+```
+
+Calculate the total population growth for each country over the years (1952-2007).
+
+```{r}
+# Example: Summarizing Population Growth
+population_growth <- gapminder %>%
+  group_by(country) %>%
+  summarize(
+    from = first(year),
+    pop1952 = first(pop),
+    to = last(year),
+    pop2007 = last(pop),
+    pop_growth = last(pop) - first(pop))
+
+head(population_growth)
+
+```
+
+# Creating Cross-Sectional Data from Longitudinal Data
+
+By summarizing longitudinal data, you can create new cross-sectional datasets for further analysis.
+
+Create a cross-sectional dataset that includes the average life expectancy, average GDP per capital and population growth for each continent.
+
+```{r}
+cross_sectional_data <- gapminder %>%
+  group_by(continent) %>%
+  summarize(
+    avg_lifeExp = mean(lifeExp),
+    avg_gdpPercap = median(gdpPercap),
+    continent_pop = sum(pop)
+  )
+
+head(cross_sectional_data)
+```
+
++--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| **Why Summarizing Longitudinal Data to Cross-Sectional Data Could be Useful**                                                                                                                                                                                                                                                                                                                                                                                                  |
++================================================================================================================================================================================================================================================================================================================================================================================================================================================================================+
+| **Longitudinal data** tracks the same subjects (e.g., countries, individuals) across multiple time points. While this is useful for analyzing trends over time, sometimes it's necessary to condense the data into a **cross-sectional format**, where each observation is represented by a single row. Cross-sectional data represents the "snapshot" of each entity at a given moment or an aggregation over time, and it's often used for comparative or overview analyses. |
+|                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| #### Benefits of Summarizing Longitudinal Data:                                                                                                                                                                                                                                                                                                                                                                                                                                |
+|                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| 1.  **Simplification**: Summarizing longitudinal data into cross-sectional form simplifies the dataset, making it easier to analyze, visualize, or compare.                                                                                                                                                                                                                                                                                                                    |
+|                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| 2.  **Comparative Analysis**: By reducing data over time into key metrics (like averages, sums, or differences), we can compare entities (e.g., countries, individuals) in a more direct manner.                                                                                                                                                                                                                                                                               |
+|                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| 3.  **Data Reduction**: Summarizing data reduces the number of rows and complexity, which can be helpful when analyzing or visualizing large datasets.                                                                                                                                                                                                                                                                                                                         |
++--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+# Advanced Usage
+
+## Summarizing with Multiple Grouping Variables
+
+You can summarize data using multiple grouping variables to get more granular insights.
+
+```{r}
+#Example: Average Life Expectancy ect by Continent and Year
+by_continent_year <- gapminder %>%
+  group_by(continent, year) %>%
+  summarize(
+    avg_lifeExp = mean(lifeExp),
+    avg_gdpPercap = mean(gdpPercap),
+    continent_pop = sum(pop))
+
+head(by_continent_year)
+
+```
+
+Counts and proportions of logical values: `sum(x > 10)`, `mean(y == 0)`. When used with numeric functions, `TRUE` is converted to 1 and `FALSE` to 0. This makes [`sum()`](https://rdrr.io/r/base/sum.html) and [`mean()`](https://rdrr.io/r/base/mean.html) very useful: `sum(x)` gives the number of `TRUE`s in `x`, and `mean(x)` gives the proportion.
+
+```{r}
+gapminder %>%
+  group_by(continent,year) %>%
+  summarize(
+    prop_1000 = mean(gdpPercap<1000)*100
+  )
+
+
+
+```
+
+## Merging Summaries with Original Data
+
+You can merge the summarized data back with the original dataset for comparative analysis.
+
+```{r}
+# Example: Merging Average Life Expectancy with Original Data
+gapminder_with_summary <- gapminder %>%
+  left_join(by_continent_year, by = c("continent","year"))
+
+head(gapminder_with_summary)
+
+```
+
+## \* **Working with `window` Functions**
+
+```{r}
+gapminder_with_summary<-gapminder_with_summary%>%
+  mutate(lag_avg_GPDpc = lag(avg_gdpPercap))
+
+head(gapminder_with_summary)
+
+```
+
+## \*\* Transfer data to wide
+
+```{r}
+by_continent_year_wide <- by_continent_year %>%
+  pivot_wider(names_from = year, values_from = c(avg_lifeExp,avg_gdpPercap,continent_pop))
+
+head(by_continent_year_wide)
+
+
+```
+
+## **Using `across()` for Summarizing Multiple Columns**
+
+Demonstrate how to apply summary functions across multiple columns using the `across()` helper.
+
+```{r}
+# Example: Calculate the mean of multiple numeric columns
+gapminder %>%
+  group_by(continent) %>%
+  summarize(across(c(lifeExp, gdpPercap), mean))
+
+```
+
+## **Applying Multiple Functions with `across()`**
+
+Apply different functions to different columns within a single `summarize()` call.
+
+```{r}
+# Example: Apply different functions to different columns
+gapminder %>%
+  group_by(continent) %>%
+  summarize(
+    across(c(lifeExp,gdpPercap), mean, .names = "avg_{col}"),
+    across(c(lifeExp,gdpPercap), median, .names = "median_{col}")
+  )
+```
+
+# Bonus: Mapping Your Data
+
+Make sure you have the necessary packages installed:
+
+```{r}
+#install.packages("ggplot2")
+#install.packages("rnaturalearth")
+#install.packages("rnaturalearthdata")
+
+```
+
+```{r}
+library(tidyverse)
+library(gapminder)
+library(rnaturalearth)
+library(rnaturalearthdata)
+library(ggplot2)
+
+```
+
+we will summarize the `gapminder` data by **country** to calculate the average life expectancy for each country.
+
+```{r}
+install.packages("stargazer")
+# Summarizing data by continent
+cross_sectional_data <- gapminder %>%
+  group_by(country) %>%
+  summarize(
+    avg_lifeExp = mean(lifeExp, na.rm = TRUE)
+  )
+```
+
+Use the `rnaturalearth` package to get the world map data for countries.
+
+```{r}
+# Getting world map data
+world_map <- ne_countries(scale = "medium", returnclass = "sf")
+$
+```
+
+Next, we will merge the `country_data` (average life expectancy) with the `world_map` dataset. The `world_map` dataset has country names, so we will use `left_join()` to merge them based on the country name.
+
+```{r}
+# Merging the country-level life expectancy with the world map
+world_map_data <- world_map %>%
+  left_join(cross_sectional_data, by = c("name" = "country"))
+
+
+```
+
+Now we can create the map using `ggplot2`. We will use `geom_sf()` to plot the map, and `scale_fill_viridis_c()` to color the countries based on life expectancy.
+
+```{r}
+# Plotting the map
+ggplot(data = world_map_data)+
+  geom_sf(aes(fill = avg_lifeExp)) +
+  scale_fill_viridis_c(option = "plasma", na.value = "gray50") +
+  labs(title = "Average Life Expectancy by Continent",     
+       fill = "Life Expectancy") +
+  theme_minimal()
+
+```

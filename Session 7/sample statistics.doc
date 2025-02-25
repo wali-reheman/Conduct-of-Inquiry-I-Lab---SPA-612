@@ -1,0 +1,9 @@
+
+<table style="text-align:center"><caption><strong>Descriptive Statistics</strong></caption>
+<tr><td colspan="6" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left">Statistic</td><td>Mean</td><td>St. Dev.</td><td>Min</td><td>Max</td><td>N</td></tr>
+<tr><td colspan="6" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left">Age</td><td>48.91</td><td>16.79</td><td>20</td><td>80</td><td>3,184</td></tr>
+<tr><td style="text-align:left">BMI</td><td>28.45</td><td>6.33</td><td>15.02</td><td>67.83</td><td>3,184</td></tr>
+<tr><td style="text-align:left">Gender</td><td>0.56</td><td>0.50</td><td>0</td><td>1</td><td>3,184</td></tr>
+<tr><td style="text-align:left">SmokeNow</td><td>0.46</td><td>0.50</td><td>0</td><td>1</td><td>3,184</td></tr>
+<tr><td style="text-align:left">PhysActive</td><td>0.48</td><td>0.50</td><td>0</td><td>1</td><td>3,184</td></tr>
+<tr><td colspan="6" style="border-bottom: 1px solid black"></td></tr></table>

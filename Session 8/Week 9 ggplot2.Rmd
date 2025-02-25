@@ -1,0 +1,240 @@
+---
+title: "Week 9"
+author: "Wali Reheman"
+date: "2024-10-20"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## **1. Introduction to Data**
+
+We'll use the **NHANES dataset** again, which contains demographic, health, and lifestyle data from a U.S. population survey.
+
+```{r}
+library(NHANES)
+library(tidyverse)
+library(ggplot2)
+library(haven)
+data <- data.frame(NHANES)
+
+haven::write_dta(NHANES,"NHANES.dta")
+```
+
+```{r}
+glimpse(data)
+
+summary(data %>% select(BMI,MaritalStatus,Depressed,HHIncomeMid,Gender,Age, SmokeNow,PhysActive))
+
+data_clean <- data %>%
+  drop_na(DirectChol,
+          BMI,
+          MaritalStatus,
+          Depressed,
+          Poverty,
+          Gender,
+          Age, 
+          SmokeNow,
+          PhysActive,
+          HHIncomeMid)
+
+summary(data_clean %>% select(BMI,MaritalStatus,Depressed,HHIncomeMid,Gender,Age, SmokeNow,PhysActive))
+
+```
+
+## **2. Basic Graphs in Base R**
+
+**Advantage**: quick
+
+**Limitation:** Hard to customize further or overlay additional elements.
+
+### **2.1. Histogram of Age**
+
+```{r}
+hist(data_clean$BMI, 
+     main = "Histogram of BMI", 
+     xlab = "BMI", 
+     col = "lightblue", 
+     border = "black")
+
+```
+
+### **2.2. Boxplot of BMI by Gender**
+
+```{r}
+boxplot(BMI ~ Gender, data = data_clean, 
+        main = "Boxplot of BMI by Gender", 
+        xlab = "Gender", ylab = "BMI")
+
+```
+
+### 2.3 Scatter Plot
+
+```{r}
+plot(BMI ~ Age, data = data_clean, 
+     main = "Scatter Plot of BMI vs Age",
+     xlab = "Age", ylab = "BMI",
+     col = "blue", pch = 16)
+
+
+```
+
+## **3. Why Use ggplot2?**
+
+-   **Layering:** ggplot2 allows adding multiple layers (points, lines, etc.).
+
+-   **Faceting:** Easily split data across categories.
+
+-   **Customization:** Control over themes, labels, and scales.
+
+-   **Aesthetics:** Consistent look and feel with better visualization options.
+
+## **4. Step-by-Step Plotting with ggplot2**
+
+### **4.1. Basic Scatter Plot: Age vs BMI**
+
+```{r}
+# Basic scatter plot
+ggplot(data_clean, aes(x = Age, y = BMI))+ 
+  geom_point()
+
+```
+
+### **4.2. Adding Color and Titles**
+
+-   Color helps differentiate genders, and titles make the plot easier to interpret.
+
+```{r}
+# Scatter plot with color and labels
+ggplot(data_clean, aes(x = HHIncomeMid, y = BMI, color = Gender)) +
+  geom_jitter() +
+  labs(title = "Scatter Plot of BMI vs Age by Gender", 
+       x = "Age", y = "BMI")
+
+ggplot(data_clean, aes(x = HHIncomeMid, y = BMI, color = Gender))+
+  geom_point()
+
+```
+
+### **4.3. Adding a Trend Line**
+
+-   **`geom_smooth()`** helps visualize trends in data.
+
+-   **Alpha transparency** avoids overplotting by making points semi-transparent.
+
+```{r}
+# Scatter plot with a smooth trend line
+ggplot(data_clean, aes(x = Age, y = BMI, color = Gender)) +
+  geom_point(alpha = 0.6) +
+  geom_smooth(method = "loess", se = T) +
+  labs(title = "BMI vs Age with Trend Line", x = "Age", y = "BMI")+
+  theme_classic()
+```
+
+Locally estimated scatterplot smoothing (loess)
+
+Locally estimated scatterplot smoothing, or LOESS, is **a nonparametric method for smoothing a series of data in which no assumptions are made about the underlying structure of the data**.
+
+### **4.4. Faceted Plots**
+
+-   **Faceting** splits the data into smaller plots by categories (like marital status), making patterns easier to spot.
+
+```{r}
+# Facet by Marital Status
+ggplot(data_clean, aes(x = Age, y = BMI, color = Gender)) +
+  geom_point(alpha = 0.6) +
+  geom_smooth(method = "lm", se = FALSE) +
+  facet_wrap(~MaritalStatus) +
+  labs(title = "BMI vs Age by Marital Status", x = "Age", y = "BMI")+
+  theme_classic()
+
+
+```
+
+### **4.5. Bar Plot: Gender Distribution**
+
+```{r}
+# Bar plot of gender distribution
+ggplot(data_clean, aes(x = BMI)) +
+  geom_bar(fill = "blue") +
+  labs(title = "Gender Distribution", x = "BMI", y = "Count")+
+  theme_bw()
+
+```
+
+`geom_bar()` automatically counts observations for categorical variables.
+
+### **4.6. Boxplot: BMI by Depression Levels**
+
+```{r}
+# Boxplot of BMI by Depression Levels
+ggplot(data_clean, aes(x = Depressed, y = BMI, fill = Depressed)) +
+  geom_boxplot() +
+  labs(title = "BMI by Depression Levels", x = "Depression Level", y = "BMI")+theme_classic()
+
+```
+
+### 
+
+## Exercise
+
+### Exercise 1: Inspect the Age Distribution of Our Sample
+
+-   Create a **histogram of Age** using `ggplot2`.
+
+-   Customize it by changing the **binwidth** and **color**.
+
+```{r}
+
+```
+
+### **Exercise 2: Scatter Plot with Additional Aesthetic Mappings**
+
+1.  Create a **scatter plot** of `BMI` vs `HHIncomeMid`.
+
+2.  **Color the points by Gender** and **use alpha transparency** to avoid overplotting.
+
+```{r}
+
+# Scatter plot of BMI vs Income
+ggplot(data_clean, aes(x = HHIncomeMid, y = BMI, color = Gender)) +
+  geom_jitter(alpha = 0.6) +
+  labs(title = "Scatter Plot of BMI vs Household Income Midpoint", 
+       x = "Household Income Midpoint", y = "BMI")
+
+```
+
+### **Exercise 3: Adding Trend Lines**
+
+1.  Using the **scatter plot from Exercise 2**, add a **trend line** with `geom_smooth()`.
+
+2.  Use **method = "lm"** to fit a linear trend and **disable confidence intervals**.
+
+```{r}
+# Scatter plot with a linear trend line
+ggplot(data_clean, aes(x = HHIncomeMid, y = BMI, color = Gender)) +
+  geom_jitter(alpha = 0.6) +
+  geom_smooth(method = "loess",)
+  labs(title = "BMI vs Income with Linear Trend", 
+       x = "Household Income Midpoint", y = "BMI")
+
+
+```
+
+### **Exercise 4: Faceting with Multiple Categories**
+
+1.  Create a **scatter plot of Age vs BMI** and facet it by **Smoking Status (`SmokeNow`)**.
+
+2.  Use **different colors for Gender** and add a **smooth trend line**.
+
+```{r}
+# Faceted scatter plot by Smoking Status
+ggplot(data_clean, aes(x = Age, y = BMI, color = Gender)) +
+  geom_point(alpha = 0.6) +
+  geom_smooth(method = "loess", se = FALSE) +
+  facet_wrap(~SmokeNow) +
+  labs(title = "BMI vs Age by Smoking Status", x = "Age", y = "BMI")
+
+```

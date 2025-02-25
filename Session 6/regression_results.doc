@@ -1,0 +1,26 @@
+{\rtf1\fs24
+\trowd\trgaph75\trleft-75\intbl\trqc\clbrdrt\brdrs\cellx2016\clbrdrt\brdrs\cellx3312\clbrdrt\brdrs\cellx4608\clbrdrt\brdrs\cellx6048
+\ql \cell\qc (1)\cell\qc (2)\cell\qc (3)\cell\row
+\trowd\trgaph75\trleft-75\trqc\cellx2016\cellx3312\cellx4608\cellx6048
+\trowd\trgaph75\trleft-75\trqc\clbrdrb\brdrs\cellx2016\clbrdrb\brdrs\cellx3312\clbrdrb\brdrs\cellx4608\clbrdrb\brdrs\cellx6048
+\ql VARIABLES\cell\qc Model 1\cell\qc Model 2\cell\qc Model 3\cell\row
+\trowd\trgaph75\trleft-75\trqc\cellx2016\cellx3312\cellx4608\cellx6048
+\ql \cell\qc \cell\qc \cell\qc \cell\row
+\ql Mileage (mpg)\cell\qc -49.51\cell\qc 21.85\cell\qc -13.41\cell\row
+\ql \cell\qc (86.16)\cell\qc (74.22)\cell\qc (72.11)\cell\row
+\ql Weight (lbs.)\cell\qc 1.747***\cell\qc 3.465***\cell\qc 5.716***\cell\row
+\ql \cell\qc (0.641)\cell\qc (0.631)\cell\qc (1.016)\cell\row
+\ql Car type\cell\qc \cell\qc 3,673***\cell\qc 3,550***\cell\row
+\ql \cell\qc \cell\qc (684.0)\cell\qc (655.5)\cell\row
+\ql Length (in.)\cell\qc \cell\qc \cell\qc -92.48***\cell\row
+\ql \cell\qc \cell\qc \cell\qc (33.59)\cell\row
+\ql Constant\cell\qc 1,946\cell\qc -5,854*\cell\qc 5,516\cell\row
+\ql \cell\qc (3,597)\cell\qc (3,377)\cell\qc (5,242)\cell\row
+\ql \cell\qc \cell\qc \cell\qc \cell\row
+\ql Observations\cell\qc 74\cell\qc 74\cell\qc 74\cell\row
+\trowd\trgaph75\trleft-75\trqc\trbrdrb\brdrs\clbrdrb\brdrs\cellx2016\clbrdrb\brdrs\cellx3312\clbrdrb\brdrs\cellx4608\clbrdrb\brdrs\cellx6048
+\ql R-squared\cell\qc 0.293\cell\qc 0.500\cell\qc 0.549\cell\row
+\pard\qc
+Standard errors in parentheses\par
+*** p<0.01, ** p<0.05, * p<0.1\par
+}

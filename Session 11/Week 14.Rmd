@@ -1,0 +1,119 @@
+---
+title: "Week 14"
+author: "Wali Reheman"
+date: "2024-12-01"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(haven)
+library(tidyverse)
+```
+
+```{r}
+df<-read_dta("CMPS_2016.dta")
+```
+
+## **Why do we need predicted values?**
+
+After fitting a model, it is useful generate model-based estimates (expected values, or *adjusted predictions*) of the response variable for different combinations of predictor values. Such estimates can be used to make inferences about relationships between variables - adjusted predictions tell you: what is the expected ouctome for certain values or levels of my predictors?
+
+**ggeffects** is a handy package that aims at easily calculating adjusted predictions at meaningful values of covariates from statistical models.
+
+```{r}
+#install.packages("ggeffects")
+library(ggeffects)
+```
+
+```{r}
+data <- df %>%
+  filter(C246<5)%>%
+  mutate(
+    discrimination = 4 - C246,
+    sex = case_when(
+      S3 == 1 ~ "Female",
+      S3 == 2 ~ "Male",
+      TRUE ~ NA_character_
+    ),
+    race = case_when(
+      S2_1 == 1 ~ "White, Not-Hispanic",
+      S2_2 == 1 ~ "Hispanic or Latino",
+      S2_3 == 1 ~ "Black or African American",
+      S2_4 == 1 ~ "Asian American",
+      TRUE ~ NA_character_
+    ),
+    age = AGE
+  )
+
+
+# Convert 'race' to a factor and set levels
+data$race <- factor(data$race,
+                    levels =  c("White, Not-Hispanic",
+                               "Hispanic or Latino",
+                               "Black or African American",
+                               "Asian American"))
+
+data$sex <- factor(data$sex)
+```
+
+## Predicted Values and Categorical Predictor
+
+After fitting a model, it's often helpful to estimate how the response variable changes for different levels of a categorical predictor. These predictions allow us to assess the adjusted relationship between a categorical variable and the outcome, holding other predictors constant. For example, we might want to know how discrimination scores differ by race or sex while controlling for other factors such as age. Using `ggeffects`, we can calculate and visualize these predictions efficiently.
+
+```{r}
+model1<-lm(discrimination~sex+race+age,data=data)
+
+summary(model1)
+
+model1_pred<-ggpredict(model1,"race",ci_level = 0.95)
+
+plot(model1_pred)
+
+plot(model1_pred)+ylim(2,3)
+
+```
+
+## Predicted Values and Continuous Predictor
+
+In this section, we explore how a continuous predictor influences the response variable. Adjusted predictions allow us to understand the expected outcome across a range of values for the continuous variable, holding other factors constant.
+
+```{r}
+
+model1_pred2<-ggpredict(model1,"race",ci_level = 0.95)
+
+plot(model1_pred2)+ylim(1.5,3)
+```
+
+## Predicted Values and Interactions
+
+Interactions between predictors can reveal more complex relationships, where the effect of one predictor depends on the level of another. Visualizing predicted values in the context of interactions helps us interpret these conditional effects effectively.
+
+### Interaction between Categorical Predictor and Continuous Predictor
+
+Interactions between categorical and continuous predictors allow us to assess whether the relationship between the continuous variable and the outcome varies across groups. For example, we can examine whether the effect of age on discrimination differs by sex.
+
+```{r}
+model2<-lm(discrimination~sex*age+race,data=data)
+summary(model2)
+
+model2_pred<-ggpredict(model2,c("age","sex"),ci_level = 0.95)
+
+plot(model2_pred)+ylim(1.5,3)
+```
+
+### Interaction between Categorical Predictors
+
+When two categorical predictors interact, we can explore how their combined levels influence the response variable. This analysis helps to determine whether the relationship between one categorical variable and the outcome depends on the levels of another categorical variable. For example, we can estimate how discrimination scores vary by the interaction of race and sex.
+
+```{r}
+model3<-lm(discrimination~sex*race+age,data=data)
+summary(model3)
+
+model3_pred<-ggpredict(model3,c("race","sex"),ci_level = 0.95)
+
+plot(model3_pred)+ylim(1.5,3)
+```

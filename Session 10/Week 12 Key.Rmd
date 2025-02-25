@@ -1,0 +1,212 @@
+---
+title: "Week 12"
+author: "Wali Reheman"
+date: "2024-11-10"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Getting Started
+
+This analysis explores the **General Social Survey (GSS) dataset** to perform exploratory data analysis and inferential tests.
+
+### Load packages
+
+```{r}
+library(tidyverse)
+```
+
+### Load data
+
+```{r}
+load("gss.Rdata")
+dim(gss)
+
+```
+
+## Part 1: Data
+
+### Background
+
+The GSS dataset collects information on American societal trends, covering demographics, behaviors, attitudes, and issues like civil liberties, crime, and social mobility. The dataset contains 57,061 observations with 114 variables, representing diverse sociological factors.
+
+### Methodology
+
+GSS surveys are conducted face-to-face with randomly selected U.S. adults. The sampling uses a mix of cluster and stratified random sampling, primarily targeting adults (18+).
+
+### Scope of Inference
+
+As an observational study, the GSS allows for generalization to the U.S. population but does not support **causal inference.** Potential bias includes non-response, as participation is voluntary and time-intensive.
+
+## Part 2: Research Questions
+
+1.  **Is there a relationship between race and perception of premarital sex?**
+
+2.  **Is there a relationship between age and perception of premarital sex?**
+
+3.  **Is there a relationship between sex and perception of premarital sex?**
+
+These questions aim to understand how race, age and sex influence attitudes toward premarital sex, an issue tied to public health concerns.
+
+### Data Preparation
+
+```{r}
+gss_sub <- gss %>% 
+  filter(year >= 2010, !is.na(age)&!is.na(race)&!is.na(premarsx)&!is.na(sex)) %>% 
+  select(age, race, premarsx,sex)
+
+dim(gss_sub)
+
+```
+
+## Part 3: Exploratory Data Analysis
+
+```{r}
+summary(gss_sub)
+
+```
+
+#### Race vs. Perception toward Premarital Sex
+
+```{r}
+ggplot(gss_sub, aes(x = race, fill = premarsx)) + 
+  geom_bar(position = "fill") + 
+  labs(x = "Race", y = "Proportion", title = "Race vs. Premarital Sex Perception")
+
+```
+
+#### Age vs. Perception toward Premarital Sex
+
+```{r}
+ggplot(gss_sub, aes(x = age, y = premarsx)) + 
+  geom_boxplot() + 
+  labs(x = "Age (years)", y = "Premarital Sex Perception", title = "Age vs. Premarital Sex Perception")
+
+
+ggplot(gss_sub, aes(x = premarsx, y = age)) + 
+  geom_boxplot(fill = "lightblue") + 
+  labs(x = "Premarital Sex Perception", y = "Age", title = "Age Distribution by Premarital Sex Perception") +
+  theme_classic()
+
+
+```
+
+```{r}
+ggplot(gss_sub, aes(x = age, fill = premarsx)) + 
+  geom_bar(position = "fill") + 
+  labs(x = "Age", y = "Proportion", title = "Age vs. Premarital Sex Perception")
+
+```
+
+### Sex vs. Perception toward Premarital Sex
+
+```{r}
+ggplot(gss_sub, aes(x = sex, fill = premarsx)) + 
+  geom_bar(position = "fill") + 
+  labs(x = "Sex", y = "Proportion", title = "Sex vs. Premarital Sex Perception")
+```
+
+## Part 4: Inference
+
+In this section, we'll use different statistical tests to see if race, age, and other factors relate to people's perceptions of premarital sex. We'll use **Chi-squared tests** to check if categories like race and perception are related, **t-tests** to compare group means when we have only two groups, **ANOVA** to see if age varies by perception groups, and **linear regression** to explore relationships and control for other factors.
+
+### Chi-Squared Test: Race and Perception of Premarital Sex
+
+The **Chi-squared test** is used when we want to check if two categories, like race and perception of premarital sex, are connected. It's perfect for testing relationships between groups without worrying about averages or other statistics.
+
+-   **When to Use:** Chi-squared is useful for comparing categories, like race and perceptions, to see if one might impact the other.
+
+-   **Null Hypothesis (H_0):** Race and perceptions of premarital sex are not connected.
+
+-   **Alternative Hypothesis (H_A):** Race and perceptions of premarital sex are connected.
+
+```{r}
+# Chi-squared test between race and perception on premarital sex
+chisq_test <- chisq.test(gss_sub$race, gss_sub$premarsx)
+chisq_test
+
+```
+
+If the p-value is low (typically below 0.05), we can say there's likely a connection between race and perception of premarital sex.
+
+### t-Test: Comparing Two Groups
+
+The **t-test** is used to compare the means of a numeric variable between two groups. For example, if we wanted to see if there was a difference in approval of premarital sex between male and female , we'd use a t-test.
+
+-   **When to Use**: Use the t-test to compare the mean of a numeric variable between **two groups**.
+
+-   **Null Hypothesis (H_0)**: There is no difference in the means between the two groups.
+
+-   **Alternative Hypothesis (H_A)**: There is a difference in the means between the two groups.
+
+```{r}
+
+# Convert perception to numeric if necessary
+gss_sub <- gss_sub %>%
+  mutate(premarsx_num = as.numeric(as.factor(premarsx)))
+
+table(gss_sub$premarsx,gss_sub$premarsx_num)
+
+# t-test for age between two groups of premarital sex perception
+t_test <- t.test(premarsx_num ~ sex, data = gss_sub)
+t_test
+```
+
+### ANOVA: Age and Perception of Premarital Sex
+
+**ANOVA** (Analysis of Variance) tests if the average age is different across groups defined by another factor, in this case, people's views on premarital sex. It's great for comparing averages when there are multiple groups.
+
+-   **When to Use:** Use ANOVA to check for differences in averages across groups.
+
+-   **Null Hypothesis (H_0):** There's no difference in the average age of people with different views on premarital sex.
+
+-   **Alternative Hypothesis (H_A):** The average age is different for people with different views on premarital sex.
+
+```{r}
+# ANOVA test for age vs. premarital sex perception
+aov_test <- aov(age ~ premarsx, data = gss_sub)
+summary(aov_test)
+
+```
+
+A low p-value means there's probably a difference in age between groups with different views on premarital sex.
+
+### Linear Regression: Age Predicting Premarital Sex Perception
+
+**Linear regression** lets us see if there's a straight-line relationship between two variables. Here, we're checking if age can predict how people feel about premarital sex, treating perception as a number (ordered, like on a scale).
+
+-   **When to Use:** Regression is good when you want to predict one variable based on another.
+
+-   **Regression Model:** This model checks if there's a straight-line relationship between age and perception of premarital sex.
+
+-   **Disturbance Term (Error):** The "disturbance" or "error" term represents the variation we can't explain. We assume these errors are random and don't follow any particular pattern.
+
+```{r}
+
+# Run linear regression model
+lm_model <- lm(premarsx_num ~ age, data = gss_sub)
+summary(lm_model)
+
+plot(lm_model)
+
+
+
+```
+
+### Multiple Regression: Controlling for Additional Factors
+
+**Multiple regression** is like regular regression, but it includes more variables to control for their effects. For example, by adding race as a predictor, we can see the effect of age on perception of premarital sex while accounting for race.
+
+-   **Why Control for Another Factor?** By controlling for race, we can see if age really affects perception independently of race.
+
+-   **Key Assumptions:** For this to work well, we assume no large outliers, normally distributed errors, and no strong overlap (multicollinearity) among predictors.
+
+```{r}
+# Multiple regression with age and race
+lm_model_mult <- lm(premarsx_num ~ age + race, data = gss_sub)
+summary(lm_model_mult)
+
+```

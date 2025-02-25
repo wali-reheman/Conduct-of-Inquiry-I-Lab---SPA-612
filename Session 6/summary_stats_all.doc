@@ -1,0 +1,22 @@
+{\rtf1\fs24
+\trowd\trgaph75\trleft-75\intbl\trqc\clbrdrt\brdrs\cellx1872\clbrdrt\brdrs\cellx2448\clbrdrt\brdrs\cellx3312\clbrdrt\brdrs\cellx4176\clbrdrt\brdrs\cellx5040\clbrdrt\brdrs\cellx6048
+\ql \cell\qc (1)\cell\qc (2)\cell\qc (3)\cell\qc (4)\cell\qc (5)\cell\row
+\trowd\trgaph75\trleft-75\trqc\cellx1872\cellx2448\cellx3312\cellx4176\cellx5040\cellx6048
+\trowd\trgaph75\trleft-75\trqc\clbrdrb\brdrs\cellx1872\clbrdrb\brdrs\cellx2448\clbrdrb\brdrs\cellx3312\clbrdrb\brdrs\cellx4176\clbrdrb\brdrs\cellx5040\clbrdrb\brdrs\cellx6048
+\ql VARIABLES\cell\qc N\cell\qc mean\cell\qc sd\cell\qc min\cell\qc max\cell\row
+\trowd\trgaph75\trleft-75\trqc\cellx1872\cellx2448\cellx3312\cellx4176\cellx5040\cellx6048
+\ql \cell\qc \cell\qc \cell\qc \cell\qc \cell\qc \cell\row
+\ql price\cell\qc 74\cell\qc 6,165\cell\qc 2,949\cell\qc 3,291\cell\qc 15,906\cell\row
+\ql mpg\cell\qc 74\cell\qc 21.30\cell\qc 5.786\cell\qc 12\cell\qc 41\cell\row
+\ql rep78\cell\qc 69\cell\qc 3.406\cell\qc 0.990\cell\qc 1\cell\qc 5\cell\row
+\ql headroom\cell\qc 74\cell\qc 2.993\cell\qc 0.846\cell\qc 1.500\cell\qc 5\cell\row
+\ql trunk\cell\qc 74\cell\qc 13.76\cell\qc 4.277\cell\qc 5\cell\qc 23\cell\row
+\ql weight\cell\qc 74\cell\qc 3,019\cell\qc 777.2\cell\qc 1,760\cell\qc 4,840\cell\row
+\ql length\cell\qc 74\cell\qc 187.9\cell\qc 22.27\cell\qc 142\cell\qc 233\cell\row
+\ql turn\cell\qc 74\cell\qc 39.65\cell\qc 4.399\cell\qc 31\cell\qc 51\cell\row
+\ql displacement\cell\qc 74\cell\qc 197.3\cell\qc 91.84\cell\qc 79\cell\qc 425\cell\row
+\ql gear_ratio\cell\qc 74\cell\qc 3.015\cell\qc 0.456\cell\qc 2.190\cell\qc 3.890\cell\row
+\ql foreign\cell\qc 74\cell\qc 0.297\cell\qc 0.460\cell\qc 0\cell\qc 1\cell\row
+\trowd\trgaph75\trleft-75\trqc\trbrdrb\brdrs\clbrdrb\brdrs\cellx1872\clbrdrb\brdrs\cellx2448\clbrdrb\brdrs\cellx3312\clbrdrb\brdrs\cellx4176\clbrdrb\brdrs\cellx5040\clbrdrb\brdrs\cellx6048
+\ql \cell\qc \cell\qc \cell\qc \cell\qc \cell\qc \cell\row
+}

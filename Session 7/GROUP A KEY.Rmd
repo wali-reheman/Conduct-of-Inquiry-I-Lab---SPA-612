@@ -1,0 +1,195 @@
+---
+title: "Week 8 A"
+author: "Wali Reheman"
+date: "2024-10-09"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## **Dataset**
+
+We will use the **NHANES** dataset, which contains health and demographic information collected from a representative sample of the U.S. population. The dataset is available in R through the `NHANES` package.
+
+**Accessing the Dataset**:
+
+```{r, message=FALSE, warning=FALSE}
+#install.packages("NHANES")  # Install if not already installed
+library(NHANES)
+data <- data.frame(NHANES)
+
+```
+
+## TASK 1: Data Exploration
+
+-   **Load the `NHANES` dataset**.
+
+-   Use `tidyverse` functions to:
+
+    -   View the **structure** of the dataset.
+
+    -   Summarize key variables: `Age`, `Gender`, `BMI`, `SmokeNow` (whether the person currently smokes), and `PhysActive`(physical activity status).
+
+    -   Just check the **levels** if it is categorical variable.
+
+```{r, message=FALSE, warning=FALSE}
+library(tidyverse)
+
+glimpse(data)
+
+# Summarize Age and BMI
+summary(data %>% select(Gender,Age, BMI,SmokeNow,PhysActive))
+
+# Frequency table for Gender
+table(data$Gender)
+
+# Frequency table for SmokeNow
+table(data$SmokeNow)
+
+
+# two ways to check levels
+
+print(head(data$Gender))
+
+levels(data$Gender)
+```
+
+## TASK 2: Data Cleaning 
+
+-   Check for **missing values** in key variables.
+
+-   Remove any rows with missing values.
+
+-   Recode `SmokeNow` and `PhysActive` to have more interpretable categories if necessary.
+
+```{r}
+data_clean <- data %>%
+  drop_na(Age, BMI, Gender, SmokeNow, PhysActive)
+
+
+
+
+# (Optionally)
+
+# Optional 1: Recode variables for more information when doing summary
+
+data_clean1 <- data_clean %>%
+  mutate(
+    SmokeNow = recode(SmokeNow, "Yes" = 1, "No" = 0),
+    PhysActive = recode(PhysActive, "Yes" = 1, "No" = 0),
+    Gender = recode(Gender, "male" = 1, "female" = 0)
+  )
+
+summary(data_clean1 %>% select(Gender,Age, BMI,SmokeNow,PhysActive))
+
+
+# Option 2: Recode variables for regression table later
+
+# this way so that your regrestion table is more straitforward
+
+data_clean2 <- data_clean %>%
+  mutate(
+    SmokeNow = recode(SmokeNow, "Yes" = "Smoker", "No" = "Non-Smoker"),
+    PhysActive = recode(PhysActive, "Yes" = "Active", "No" = "Inactive"))
+
+summary(data_clean2 %>% select(Gender,Age, BMI,SmokeNow,PhysActive))
+
+
+
+```
+
+## TASK 3: Data Visualization
+
+-   Create a **histogram** of `BMI`.
+
+-   Create a **boxplot** of `BMI` by `Gender`.
+
+-   Add appropriate **labels** and **titles**.
+
+```{r}
+## basic R
+
+hist(data_clean2$BMI, 
+     main = "Histogram of BMI", 
+     xlab = "BMI", 
+     col = "lightblue",  # Optional: Adds color to the bars
+     border = "black")   # Optional: Adds a border to the bars
+
+
+boxplot(BMI ~ Gender, data = data_clean2,  # remember to use the dataset you didn't code Gender as numbers so that X aes wound't be a continues variable
+        main = "Boxplot of BMI by Gender",
+        xlab = "Gender", 
+        ylab = "BMI",
+        col = "lightblue")  # Optional: Adds color to the boxplot
+
+
+# ggplot2 package
+
+
+ggplot(data_clean1, aes(x = BMI)) +
+  geom_histogram(binwidth = 1, fill = "blue", color = "black") +  # we are doing it a bit differently by changing the binwidth
+  labs(title = "Distribution of BMI", x = "BMI", y = "Frequency")
+
+ggplot(data_clean2, aes(x = Gender, y = BMI)) +
+  geom_boxplot(fill = "pink") +
+  labs(title = "BMI by Gender", x = "Gender", y = "BMI")
+
+```
+
+## TASK 4: **Descriptive Statistics**
+
+-   Use stargazer Present sample statistics for our key variables, mutate the data if needed ( for categorical variables)
+
+-   Present the results in a **neat table**.
+
+```{r, message=FALSE, warning=FALSE}
+
+# Only do sample statistic for our key variables
+key_variables <- data_clean1 %>%
+  select(Age, BMI, Gender, SmokeNow, PhysActive)
+
+
+
+library(stargazer)
+
+# Key variables: Age,Gender,BMI,SmokeNow(whether the person currently smokes), and PhysActive(physical activity status).
+stargazer(
+  key_variables,
+  type = "text", #comment out this line and de-comment the following two line if you need a doc file
+#  type = "html",
+#  out = "sample statistics.doc",
+  title = "Descriptive Statistics",
+  digits = 2, # keeping two digit after "."
+  summary.stat = c("mean", "sd", "min", "max","n")
+)
+```
+
+## TASK 5: Regression Analysis
+
+-   Run a linear regression with `BMI` as the **dependent variable** and `Age`, `Gender`, and `PhysActive` as **independent variables**.
+
+-   **Interpret** the coefficients ( to yourself or group member).
+
+```{r}
+model_basic <- lm(BMI ~ Age + Gender + PhysActive, data = data_clean2)
+summary(model_basic)
+
+```
+
+## TASK 6: Presenting Results
+
+-   Use `stargazer` to create a **regression table (both in the console and a Word doc)**.
+
+-   Use `coefplot` to **visualize** the coefficients.
+
+```{r}
+stargazer(model_basic, type = "text", title = "Regression Results")
+
+library(coefplot)
+coefplot(model_basic, title = "Coefficient Plot",intercept = F)
+
+```

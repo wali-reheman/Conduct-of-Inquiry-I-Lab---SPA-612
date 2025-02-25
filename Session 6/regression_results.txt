@@ -1,0 +1,18 @@
+		(1)	(2)	(3)
+VARIABLES	LABELS	Model 1	Model 2	Model 3
+				
+mpg	Mileage (mpg)	-49.51	21.85	-13.41
+		(86.16)	(74.22)	(72.11)
+weight	Weight (lbs.)	1.747***	3.465***	5.716***
+		(0.641)	(0.631)	(1.016)
+foreign	Car type		3,673***	3,550***
+			(684.0)	(655.5)
+length	Length (in.)			-92.48***
+				(33.59)
+Constant	Constant	1,946	-5,854*	5,516
+		(3,597)	(3,377)	(5,242)
+				
+Observations		74	74	74
+R-squared		0.293	0.500	0.549
+Standard errors in parentheses				
+*** p<0.01, ** p<0.05, * p<0.1				
