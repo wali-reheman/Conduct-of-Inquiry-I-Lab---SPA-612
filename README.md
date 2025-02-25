@@ -1,1 +1,2 @@
-This course is a training lab working as supplement to the SPA 612: Conduct of Inquiry I. This lab is an introduction to R and Stata programming, focusing on data wrangling, visualization, basic regression and result output. The course aims to equip students with essential skills to manipulate, analyze, and visualize data using R and Stata.
+# Description
+This course serves as a supplementary training laboratory to SPA 612: Conduct of Inquiry I. It provides an introduction to R and Stata programming, with a primary focus on data wrangling, visualization, and fundamental regression analysis. The course’s objective is to equip students with essential skills in manipulating, analyzing, and visualizing data utilizing R and Stata.
