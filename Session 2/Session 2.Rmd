@@ -1,0 +1,227 @@
+---
+title: "Session 2: Introduction to dplyr"
+author: "Wali Reheman"
+date: "2024-09-10"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introduction to dplyr
+
+In this class, we will explore the **dplyr** package for data manipulation in R. You will learn how to use its key functions such as `select()`, `filter()`, `arrange()`, and `mutate()`. We will also cover advanced topics like using `across()` for applying functions to multiple columns, grouping and summarizing data, and joining datasets.
+
+---
+
+## Loading Libraries and Dataset
+
+We begin by loading the **tidyverse** package (which includes dplyr) and using the built-in **mtcars** dataset.  
+If you haven't installed **tidyverse**, run:
+
+```r
+install.packages("tidyverse")
+```
+
+Now, load the library and view the first few rows of the dataset:
+
+```{r}
+library(tidyverse)
+head(mtcars)
+```
+
+---
+
+## Part 1: Selecting and Renaming Columns
+
+### 1.1 Select Specific Columns
+
+The `select()` function extracts specific columns from a dataset. For example, to select only `mpg`, `hp`, and `cyl`:
+
+```{r}
+mtcars_selected <- mtcars %>%
+  select(mpg, hp, cyl)
+head(mtcars_selected)
+```
+
+**Task 1:**  
+*Exercise: Select columns `wt`, `qsec`, and `gear` from the mtcars dataset.*
+
+```{r}
+# Your code here
+```
+
+### 1.2 Renaming Columns
+
+Use `rename()` to change column names without altering the data structure. For example, to rename `mpg` to `Miles_Per_Gallon`:
+
+```{r}
+mtcars_renamed <- mtcars %>%
+  rename(Miles_Per_Gallon = mpg)
+head(mtcars_renamed)
+```
+
+**Task 2:**  
+*Exercise: Rename the `hp` column to `Horsepower`.*
+
+```{r}
+# Your code here
+```
+
+---
+
+## Part 2: Filtering Rows
+
+### 2.1 Filter Based on One Condition
+
+Use `filter()` to select rows meeting a condition. For example, filtering cars with more than 6 cylinders:
+
+```{r}
+mtcars_filtered <- mtcars %>%
+  filter(cyl > 6)
+head(mtcars_filtered)
+```
+
+### 2.2 Filter Based on Multiple Conditions
+
+Combine conditions using logical operators (`&` for AND, `|` for OR). For example, filtering cars with more than 6 cylinders and more than 100 horsepower:
+
+```{r}
+mtcars_filtered_advanced <- mtcars %>%
+  filter(cyl > 6 & hp > 100)
+head(mtcars_filtered_advanced)
+```
+
+**Task 3:**  
+*Exercise: Filter cars that have either 4 or 8 cylinders.*
+
+```{r}
+# Your code here
+```
+
+---
+
+## Part 3: Creating New Variables with mutate()
+
+### 3.1 Basic Mutate
+
+The `mutate()` function creates or modifies columns. For example, to create a new column representing horsepower per weight:
+
+```{r}
+mtcars_new_var <- mtcars %>%
+  mutate(hp_per_wt = hp / wt)
+head(mtcars_new_var)
+```
+
+### 3.2 Creating Multiple New Columns
+
+You can create multiple columns in one go. For example, add `hp_per_wt` and a scaled version of `mpg`:
+
+```{r}
+mtcars_multi_mutate <- mtcars %>%
+  mutate(hp_per_wt = hp / wt,
+         scaled_mpg = scale(mpg))
+head(mtcars_multi_mutate)
+```
+
+### 3.3 Conditional Mutate
+
+Create new columns based on conditions using `if_else()`. For example, classify cars as "High HP" or "Low HP":
+
+```{r}
+mtcars_classified <- mtcars %>%
+  mutate(hp_class = if_else(hp > 150, "High HP", "Low HP"))
+head(mtcars_classified)
+```
+
+**Task 4:**  
+*Exercise: Create a new variable classifying cars as "Heavy" or "Light" based on their weight (`wt`).*
+
+```{r}
+# Your code here
+```
+
+### 3.4 Advanced: Using case_when()
+
+Use `case_when()` for multiple conditions. For example, classify cars into weight categories:
+
+```{r}
+mtcars_weight_class <- mtcars %>%
+  mutate(weight_class = case_when(
+    wt < 2.5 ~ "Light",
+    wt >= 2.5 & wt < 3.5 ~ "Medium",
+    wt >= 3.5 ~ "Heavy"
+  ))
+head(mtcars_weight_class)
+```
+
+### 3.5 Using mutate() with across()
+
+Apply the same transformation to multiple columns using `across()`. For example, standardize the `mpg` and `hp` columns:
+
+```{r}
+mtcars_scaled_vars <- mtcars %>%
+  mutate(across(c(mpg, hp), scale))
+head(mtcars_scaled_vars)
+```
+
+---
+
+## Part 4: Sorting and Arranging Data
+
+Use the `arrange()` function to sort your data. For example, to sort by `mpg` in ascending order:
+
+```{r}
+mtcars_sorted <- mtcars %>%
+  arrange(mpg)
+head(mtcars_sorted)
+```
+
+**Task 5:**  
+*Exercise: Arrange the cars by horsepower (`hp`) in descending order.*
+
+```{r}
+mtcars_sorted_desc <- mtcars %>%
+  arrange(desc(hp))
+head(mtcars_sorted_desc)
+```
+
+
+---
+
+## Part 5: Joining Data
+
+Sometimes you'll need to combine data from two sources. dplyr offers functions like `left_join()`, `inner_join()`, etc. For example, suppose we have another dataset:
+
+```{r}
+# Create a simple data frame with car models and a new variable
+car_info <- tibble(
+  model = rownames(mtcars),
+  origin = rep(c("USA", "Europe", "Japan"), length.out = nrow(mtcars))
+)
+
+# Join mtcars with car_info by converting row names to a column
+mtcars_joined <- mtcars %>%
+  rownames_to_column(var = "model") %>%
+  left_join(car_info, by = "model")
+head(mtcars_joined)
+```
+
+*Tip:* Use `left_join()` when you want to keep all observations from your main dataset.
+
+---
+
+## Part 7: Exercises and Further Exploration
+
+Now it's your turn! Try writing your own dplyr code:
+- Experiment with different filtering conditions.
+- Create new variables based on your own criteria.
+- Explore additional joins such as `right_join()` or `full_join()` with custom datasets.
+
+```{r}
+# Your exercise code here
+```
+
+---
+
