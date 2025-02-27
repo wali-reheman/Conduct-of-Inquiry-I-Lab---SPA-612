@@ -1,8 +1,10 @@
 ---
-title: "Practice"
+title: "Session 4: R Practice A"
 author: "Wali Reheman"
 date: "2024-09-24"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
