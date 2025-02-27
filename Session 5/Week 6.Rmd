@@ -1,8 +1,10 @@
 ---
-title: "Week 6"
+title: 'Session 5: Aggregating and reshaping Data '
 author: "Wali Reheman"
 date: "2024-09-30"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -11,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Introduction
 
-The `summarize()` function from the `dplyr` package is a powerful tool for creating summary statistics of your data. It allows you to collapse a dataset to a single row or a summary for each group of observations. In this tutorial, we'll explore the basic and advanced uses of `summarize()`.
+The `summarize()` function from the `dplyr` package is a powerful tool for creating summary statistics of your data. It allows you to collapse a dataset to a single row or a summary for each group of observations. In this tutorial, we'll explore the basic and advanced uses of `summarize()`, as well as ways to reshape data.
 
 ```{r}
 #install.packages("gapminder")
@@ -219,7 +221,6 @@ library(ggplot2)
 we will summarize the `gapminder` data by **country** to calculate the average life expectancy for each country.
 
 ```{r}
-install.packages("stargazer")
 # Summarizing data by continent
 cross_sectional_data <- gapminder %>%
   group_by(country) %>%
@@ -233,7 +234,7 @@ Use the `rnaturalearth` package to get the world map data for countries.
 ```{r}
 # Getting world map data
 world_map <- ne_countries(scale = "medium", returnclass = "sf")
-$
+
 ```
 
 Next, we will merge the `country_data` (average life expectancy) with the `world_map` dataset. The `world_map` dataset has country names, so we will use `left_join()` to merge them based on the country name.
