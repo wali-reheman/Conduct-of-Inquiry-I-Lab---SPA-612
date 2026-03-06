@@ -10,7 +10,7 @@
 \ql \cell\qc (86.16)\cell\qc (74.22)\cell\qc (72.11)\cell\row
 \ql Weight (lbs.)\cell\qc 1.747***\cell\qc 3.465***\cell\qc 5.716***\cell\row
 \ql \cell\qc (0.641)\cell\qc (0.631)\cell\qc (1.016)\cell\row
-\ql Car type\cell\qc \cell\qc 3,673***\cell\qc 3,550***\cell\row
+\ql Car origin\cell\qc \cell\qc 3,673***\cell\qc 3,550***\cell\row
 \ql \cell\qc \cell\qc (684.0)\cell\qc (655.5)\cell\row
 \ql Length (in.)\cell\qc \cell\qc \cell\qc -92.48***\cell\row
 \ql \cell\qc \cell\qc \cell\qc (33.59)\cell\row

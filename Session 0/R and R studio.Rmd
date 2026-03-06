@@ -1,0 +1,199 @@
+---
+title: "R and Rstudio"
+author: "Wali Reheman"
+date: "2025-08-26"
+output:
+  pdf_document: default
+  html_document:
+    toc: true
+    toc_depth: 2
+    toc_float: true
+    number_sections: true
+editor_options:
+  chunk_output_type: console
+  markdown: 
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE
+)
+```
+
+# Learning goals
+
+By the end of this session you will be able to:
+
+1.  Describe what **R** and **RStudio** are and how they work together.\
+2.  Create and knit an **R Markdown** report for reproducible research.\
+3.  Write and run basic R commands.\
+4.  Install, load, and briefly use external packages through the
+    **library** system.
+
+------------------------------------------------------------------------
+
+# What are R and RStudio?
+
+R is a free, open-source programming language for statistical computing,
+data analysis, and visualization.
+
+On its own, R can be run from a command-line interface. However, most
+users prefer to use **RStudio** (now called Posit), which is an
+Integrated Development Environment (IDE). RStudio provides a graphical
+interface with multiple panes:
+
+-   **Source pane** (top-left): where you write and edit scripts or R
+    Markdown files.
+-   **Console pane** (bottom-left): where R commands are executed
+    immediately.
+-   **Environment/History pane** (top-right): shows active objects in
+    memory and your command history.
+-   **Files/Plots/Packages/Help pane** (bottom-right): for browsing
+    files, viewing plots, managing packages, and accessing
+    documentation.
+
+**Key idea:** R is the engine that does the computation; RStudio is the
+dashboard that makes it easier to drive.
+
+**Exercise:** Open RStudio on your computer and identify what each pane
+currently displays.
+
+------------------------------------------------------------------------
+
+# What is R Markdown?
+
+**R Markdown (RMD)** is a format that lets you combine text, code, and
+results in one reproducible document. It is powerful for writing
+assignments, reports, and research papers because the results are always
+linked to the underlying code.
+
+-   **Markdown** provides the formatting (headings, bold, lists, links).
+-   **R code chunks** allow you to run R code directly inside the
+    document.
+-   **Knitting** compiles the text and code into a report (HTML, PDF, or
+    Word).
+
+**Steps to create your first RMD:** 1. Go to `File` → `New File` →
+`R Markdown…`. 2. Give the file a title and author name, then click
+**OK**. 3. Try knitting the default file to see how R Markdown works.
+
+------------------------------------------------------------------------
+
+# Markdown basics
+
+Some useful syntax for writing: - Headings: `#` (level 1), `##` (level
+2), `###` (level 3) - Bold and italic: `**bold**`, `*italic*` - Lists:
+`- item` or `1. item` - Inline code: `` `code` `` - Hyperlinks:
+`[RStudio website](https://posit.co)`
+
+------------------------------------------------------------------------
+
+# Your first code chunks
+
+Chunks are sections of R code in R Markdown. They start with three
+backticks and `{r}`, and end with three backticks.
+
+```{r hello-world}
+# A simple example
+print("Hello, world! This is R.")
+```
+
+You can run chunks by clicking the green triangle next to them, or run
+lines directly in the Console.
+
+------------------------------------------------------------------------
+
+# Basic R syntax and objects
+
+## Assigning objects
+
+Use `<-` to assign values to objects. This makes your code clearer and
+is preferred over `=` in most situations.
+
+```{r assignment}
+x <- 10
+y <- 4
+z <- x + y
+z
+```
+
+## Vectors
+
+Vectors hold multiple values of the same type.
+
+```{r vectors}
+numbers <- c(1, 2, 3, 4, 5)
+names <- c("Alice", "Bob", "Charlie")
+mean(numbers)
+numbers * 2
+```
+
+## Data frames
+
+Data frames are like spreadsheets: rows are observations, columns are
+variables.
+
+```{r data-frame}
+students <- data.frame(
+  name = c("Alice", "Bob", "Charlie"),
+  age = c(20, 22, 21),
+  passed = c(TRUE, TRUE, FALSE)
+)
+summary(students)
+```
+
+------------------------------------------------------------------------
+
+# Installing and loading packages
+
+Packages extend the functionality of R. To use them, you must first
+**install** them once, and then **load** them each time you start a new
+R session.
+
+## Installing packages
+
+Installation requires internet access. For example, to install the
+package **tidyverse**:
+
+```{r install, eval=FALSE}
+install.packages("tidyverse")
+```
+
+## Loading libraries
+
+After installation, load the package into your current session:
+
+```{r load}
+library(tidyverse)
+```
+
+If you forget to load the package, R will give an error like
+`could not find function`. Always make sure to load packages at the top
+of your script or R Markdown.
+
+## Example with tidyverse
+
+```{r tidyverse-demo}
+# Load tidyverse and try a simple task
+library(tidyverse)
+my_data <- tibble(
+  group = rep(c("A", "B"), each = 3),
+  value = c(2, 4, 6, 1, 3, 5)
+)
+my_data |> group_by(group) |> summarize(avg_value = mean(value))
+```
+
+```{r plot-demo}
+# Simple plot with ggplot2
+mtcars |> ggplot(aes(x = wt, y = mpg)) +
+  geom_point() +
+  labs(title = "Car weight vs fuel efficiency",
+       x = "Weight (1000 lbs)",
+       y = "Miles per gallon")+theme_bw()
+```
+
+**Tip:** Use `installed.packages()` to see what is already installed,
+and `update.packages()` to keep them up to date.

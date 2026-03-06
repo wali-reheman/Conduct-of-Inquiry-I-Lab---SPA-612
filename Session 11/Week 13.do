@@ -24,20 +24,19 @@ use "CMPS_2016.dta", clear
 * RACE
 
 * generate the categorical race variable
-gen race = .
+gen White = .
 
 * Assign race categories based on dummy variables
-replace race = 1 if S2_1 == 1  // White, Not-Hispanic
-replace race = 2 if S2_2 == 1   // Hispanic or Latino
-replace race = 3 if S2_3 == 1 // Black or African American
-replace race = 4 if S2_4 == 1    // Asian American
+replace White = 1 if S2_1 == 1  // White, Not-Hispanic
+replace White = 0 if White !=1
 
 * Label the race categories for clarity
-label define race_lbl 1 "White, Not-Hispanic" 2 "Hispanic or Latino" 3 "Black or African American" 4 "Asian American"
-label values race race_lbl
+label define White_lbl 1 "White" 0 "Minority" 
+
+label values White White_lbl
 
 * Verify the distribution of the new race variable
-tabulate race
+tabulate White
 
 * GENDER 
 
@@ -58,7 +57,7 @@ drop if C246==5
 
 
 * numeric 
-gen discrimination = 5-C246
+gen discrimination = 4-C246
 
 tab discrimination C246
 
@@ -67,19 +66,19 @@ tab discrimination C246
 
 gen age = AGE
 
-drop if missing(C246) | missing(age) | missing(race) | missing(gender)
+drop if missing(discrimination) | missing(age) | missing(White) | missing(gender)
 
-summarize C246 age race gender
+summarize discrimination age White gender
 
 
 
 * Plot 1: Percentage Distribution of Perceptions of Discrimination by Race
-graph bar (percent), over(C246) over(race, label(angle(25))) asyvars stack percentages ///
+graph bar (percent), over(C246) over(White, label(angle(25))) asyvars stack percentages ///
     title("Perception of Discrimination by Race") ///
     ytitle("Percentage within Race Group")
 
 * Plot 2: Percentage Distribution of Perceptions of Discrimination by Gender
-graph bar (percent), over(C246) over(S3) asyvars stack percentages ///
+graph bar (percent), over(C246) over(gender) asyvars stack percentages ///
     title("Perception of Discrimination by Gender") ///
     ytitle("Percentage within Gender Group")
 
@@ -97,18 +96,18 @@ twoway (scatter discrimination age) (lfit discrimination age), title("Age vs Per
 
 * Chi-Squared Tests for Categorical Associations
 * Chi-squared test between C246 and race
-tabulate C246 race, chi2
+tabulate discrimination White, chi2
 
 * Chi-squared test between C246 and gender
-tabulate C246 S3, chi2
+tabulate C246 gender, chi2
 
 * t-Test: Perception of Discrimination by Gender
 * Comparing mean C246 perception between genders to see if there's a significant difference
-ttest C246, by(gender)
+ttest discrimination, by(gender)
 
 * ANOVA: Race Differences Across Perception Levels of Discrimination (C246)
 * Testing if mean age differs across levels of C246
-anova discrimination i.race
+anova  C246 age
 
 * Linear Regression: Age and Perception of Discrimination
 * Checking the linear relationship between age and discrimination
@@ -116,7 +115,7 @@ regress discrimination age
 
 * Multiple Regression: Age, Race, and Gender on Perception of Discrimination
 * Examines the relationship between discrimination and the combination of age, race, and gender
-regress discrimination age i.race i.S3
+regress discrimination age i.White i.gender
 
 
 

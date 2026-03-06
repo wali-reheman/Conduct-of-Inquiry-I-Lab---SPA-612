@@ -1,0 +1,292 @@
+---
+title: "Semester Review: Exploratory Data Analysis & Regression"
+author: "SPA 096: Conduct of Inquiry Lab"
+date: "Fall 2025"
+output: html_document
+---
+
+# Semester Review: Exploratory Data Analysis & Regression
+
+This document provides a comprehensive review of the topics covered this semester, including data loading, wrangling, summarization, visualization, and regression. We will perform an exploratory data analysis (EDA) and a simple regression on the American National Election Studies (ANES) 2020 dataset.
+
+## 1. Setup: Loading Packages
+
+First, we need to load the necessary packages. The `tidyverse` package is a collection of R packages designed for data science, including `dplyr` for data manipulation and `ggplot2` for visualization.
+
+```{r}
+# If you haven't installed it yet, uncomment and run the line below
+# install.packages("tidyverse")
+
+library(tidyverse)
+```
+
+## 2. Data Loading
+
+We will load the ANES 2020 dataset directly from a public URL. This ensures our analysis is reproducible. We use `read_csv` from the `readr` package (part of `tidyverse`) which is generally faster and more reliable than the base R `read.csv`.
+
+```{r}
+# URL for the ANES 2020 dataset
+library(devtools)
+install_github("jamesmartherus/anesr")
+library(anesr)
+
+data(package="anesr") #View a list of available datasets
+
+data(pilot_2020) #Load 2020
+
+haven::write_dta(pilot_2020,"anes_pilot_2020.dta")
+
+saveRDS(pilot_2020,"anes_pilot_2020.RDS")
+
+write.csv(pilot_2020,"anes_pilot_2020.csv")
+
+anes_data<-pilot_2020
+```
+
+## 3. Initial Data Exploration
+
+Before diving into analysis, let's get a first look at our data. We can use functions like `glimpse()` to see the structure and `summary()` for a statistical overview.
+
+```{r}
+
+# Glimpse shows variable types and first few values
+glimpse(anes_data)
+
+# Summary provides descriptive statistics
+summary(anes_data$age)
+summary(anes_data$income)
+summary(anes_data$pid7)
+
+```
+
+## 4. Data Wrangling with dplyr
+
+The raw dataset is massive. We will select a few key variables and clean them up for our analysis. We will focus on vote choice, party identification, age, and income.
+
+-   `select()`: to choose specific columns.
+-   `filter()`: to remove rows with missing data.
+-   `mutate()` and `case_when()`: to recode variables into more meaningful categories.
+-   `rename()`: to give variables understandable names.
+
+```{r}
+anes_clean <- anes_data %>%
+   select(
+    vote_choice = vote20jb,        # 2020 Biden vote (binary: voted for Biden)
+    party_id = pid7,               # Party identification (7-point scale)
+    age = age,                     # Age in years
+    income = income                # Household income (percentile)
+  ) %>%
+  filter(
+    !is.na(vote_choice),          # Remove missing values
+    !is.na(party_id),
+    !is.na(age),
+    !is.na(income),
+    age > 0,                       # Ensure valid age values
+    income < 99,                     # Ensure valid income values
+    party_id < 9,                          # Ensure valid party ID values
+    vote_choice <3               # Care about Trump vs. Biden only
+    
+  ) %>%
+  mutate(
+    party = case_when(
+      party_id %in% c(1, 2, 3) ~ "Republican",
+      party_id == 4 ~ "Independent",
+      party_id %in% c(5, 6, 7) ~ "Democrat",
+      TRUE ~ NA
+    ),
+    party = factor(party, levels = c("Democrat", "Independent", "Republican")),
+    vote_biden = ifelse(vote_choice == 2, 1, 0) # 1 if voted for Biden, 0 Trump
+    )
+  
+
+# View the first few rows of our cleaned data
+head(anes_clean)
+```
+
+## 5. Data Summary
+
+Now that our data is clean, we can create summary statistics. Let's calculate the average age for each political party affiliation using `group_by()` and `summarise()`.
+
+```{r}
+
+party_summary <- anes_clean %>%
+  group_by(party) %>%
+  summarise(
+    average_age = mean(age, na.rm = TRUE),
+    median_income = median(income, na.rm = TRUE),
+    count = n()
+  ) %>%
+  arrange(desc(average_age)) # Sort by average age
+
+# Print the summary table
+print(party_summary)
+```
+
+## 6. Data Visualization with ggplot2
+
+Visualizations help us understand patterns in the data. `ggplot2` allows us to create beautiful, layered graphics.
+
+## Histogram of Respondent Age
+
+A histogram shows the distribution of a single continuous variable.
+
+```{r}
+
+ggplot(anes_clean, aes(x = age)) +
+  geom_histogram(binwidth = 5, fill = "#4c51bf", color = "white") +
+  labs(
+    title = "Distribution of Respondent Age in ANES 2020 Pilot",
+    x = "Age",
+    y = "Frequency"
+  ) +
+  theme_bw()
+```
+
+## Bar Plot of Party Identification
+
+A bar plot is great for showing the frequency of different categories.
+
+```{r}
+
+ggplot(anes_clean, aes(x = party, fill = party)) +
+  geom_bar() +
+  labs(
+    title = "Distribution of Party Identification",
+    x = "Party Identification",
+    y = "Count"
+  ) +
+  theme_minimal() +
+  scale_fill_manual(values = c("Democrat" = "#3b82f6", "Republican" = "#ef4444", "Independent" = "#a855f7")) +
+  theme(legend.position = "none")
+```
+
+## Boxplot of Age by Party
+
+A boxplot is excellent for comparing the distribution of a continuous variable across different categories.
+
+```{r}
+
+ggplot(anes_clean, aes(x = party, y = age, fill = party)) +
+  geom_boxplot() +
+  labs(
+    title = "Age Distribution by Party Identification",
+    x = "Party Identification",
+    y = "Age"
+  ) +
+  theme_minimal() +
+  scale_fill_manual(values = c("Democrat" = "#3b82f6", "Republican" = "#ef4444", "Independent" = "#a855f7")) +
+  theme(legend.position = "none")
+```
+
+## Scatter Plot: Income vs Age by Party
+
+```{r}
+
+ggplot(anes_clean, aes(x = age, y = income, color = party)) +
+  geom_point(alpha = 0.5) +
+  labs(
+    title = "Income vs Age by Party Identification",
+    x = "Age",
+    y = "Income",
+    color = "Party"
+  ) +
+  theme_minimal() +
+  scale_color_manual(values = c("Democrat" = "#3b82f6", "Republican" = "#ef4444", "Independent" = "#a855f7"))
+    
+
+ggplot(anes_clean, aes(x = age, y = income, color = party)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", se = T) +  # one fitted line per party
+  labs(
+    title = "Income vs Age by Party Identification",
+    x = "Age",
+    y = "Income",
+    color = "Party"
+  ) +
+  theme_minimal() +
+  scale_color_manual(values = c("Democrat" = "#3b82f6", "Republican" = "#ef4444", "Independent" = "#a855f7"))
+
+
+```
+
+## 7. Regression Analysis
+
+Finally, let's run a simple linear regression to model the relationship between two variables. We can also test whether party identification predicts income levels. The `lm()` function is used to fit linear models.
+
+```{r}
+
+# Fit a linear model: income predicted by party_id
+income_model <- lm(income ~ party_id, data = anes_clean)
+# Print the summary of the model
+summary(income_model)
+
+# Fit a linear model: income predicted by party
+income_model <- lm(income ~ party, data = anes_clean)
+
+# Print the summary of the model
+summary(income_model)
+
+```
+
+The summary output gives us the coefficient for `age`, which tells us the estimated change in income percentile for each one-year increase in age. We also get the p-value to assess statistical significance and the R-squared value, which indicates the proportion of variance in income that is predictable from age.
+
+For a more presentation-friendly table, we can use the `stargazer` package, as discussed in class. It creates well-formatted regression tables.
+
+```{r}
+# If you haven't installed it yet, uncomment and run the line below
+# install.packages("stargazer")
+library(stargazer)
+
+# Create a publication-quality regression table (as text output)
+stargazer(income_model, type = "text",
+  title = "Regression Model: Predicting Income from Age",
+  dep.var.labels = "Household Income",
+  omit.stat = c("LL", "ser", "f"),
+  no.space = TRUE)
+
+```
+
+we can also do multiple regression by adding more predictors to the model.
+
+```{r}
+vote_model<-glm(vote_biden ~ age + income + party, data=anes_clean, family=binomial)
+
+# Print the summary of the model
+summary(vote_model)
+
+library(coefplot)
+
+coefplot(vote_model,intercept=FALSE)+theme_classic()
+
+
+```
+
+## 9. Prediction
+
+```{r}
+# Predict vote choice probabilities
+
+anes_clean$predicted_probs <- predict(vote_model, type = "response")
+
+plot(anes_clean$party, anes_clean$predicted_probs,
+     xlab = "Party",
+     ylab = "Predicted Probability of Voting for Biden",
+     main = "Predicted Probability of Voting for Biden by Age")
+
+library(ggeffects)
+
+predicted<- ggeffects::ggpredict(vote_model, terms = c("party"))
+
+plot(predicted)+
+  labs(
+    title = "Predicted Probability of Voting for Biden by Party Identification",
+    x = "Party Identification",
+    y = "Predicted Probability of Voting for Biden"
+  ) +
+  theme_bw()
+
+```
+
+## 8. Conclusion
+
+This review covered the essential workflow of a data analysis project in R, from loading and cleaning to summarizing, visualizing, and modeling. These fundamental skills from the `tidyverse` and core R are the building blocks for more advanced statistical analysis and data science work.
